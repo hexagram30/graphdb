@@ -1,6 +1,6 @@
 # hexagram30/graphdb
 
-*A graph database, build on OrientDB, for use by hexagram30 projects*
+*A graph database, built on OrientDB, for use by hexagram30 projects*
 
 [![][logo]][logo-large]
 
