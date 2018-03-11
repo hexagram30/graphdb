@@ -11,6 +11,8 @@
   :plugins [
     [venantius/ultra "0.5.2"]]
   :profiles {
+    :ubercompile {
+      :aot :all}
     :test {
       :plugins [[lein-ltest "0.3.0"]]}}
   :aliases {
