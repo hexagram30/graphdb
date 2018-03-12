@@ -7,7 +7,8 @@
   :dependencies [
     [clojusc/twig "0.3.2"]
     [hexagram30/common "0.1.0-SNAPSHOT"]
-    [org.clojure/clojure "1.8.0"]]
+    [org.clojure/clojure "1.8.0"]
+    [org.clojure/data.xml "0.0.8"]]
   :plugins [
     [venantius/ultra "0.5.2"]]
   :profiles {
