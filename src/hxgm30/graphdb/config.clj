@@ -1,7 +1,7 @@
-(ns hexagram30.graphdb.config
+(ns hxgm30.graphdb.config
   (:require
    [clojure.data.xml :as xml]
-   [hexagram30.common.file :as common]))
+   [hxgm30.common.file :as common]))
 
 (def config-file "hexagram30-config/graphdb.edn")
 

@@ -1,4 +1,4 @@
-(ns hexagram30.graphdb.core)
+(ns hxgm30.graphdb.core)
 
 (defn foo
   "I don't do a whole lot."

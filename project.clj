@@ -1,3 +1,20 @@
+(defn get-banner
+  []
+  (try
+    (str
+      (slurp "resources/text/banner.txt")
+      ;(slurp "resources/text/loading.txt")
+      )
+    ;; If another project can't find the banner, just skip it;
+    ;; this function is really only meant to be used by Dragon itself.
+    (catch Exception _ "")))
+
+(defn get-prompt
+  [ns]
+  (str "\u001B[35m[\u001B[34m"
+       ns
+       "\u001B[35m]\u001B[33m λ\u001B[m=> "))
+
 (defproject hexagram30/graphdb "0.1.0-SNAPSHOT"
   :description "A graph database, built on OrientDB, for use by hexagram30 projects"
   :url "https://github.com/hexagram30/graphdb"
@@ -8,6 +25,7 @@
     [clojusc/twig "0.3.2"]
     [com.orientechnologies/orientdb-core "2.2.33"]
     [com.orientechnologies/orientdb-server "2.2.33"]
+    [eu.7bridges/clj-odbp "0.2.2"]
     [hexagram30/common "0.1.0-SNAPSHOT"]
     [org.clojure/clojure "1.8.0"]
     [org.clojure/data.xml "0.0.8"]]
@@ -16,6 +34,14 @@
   :profiles {
     :ubercompile {
       :aot :all}
+    :dev {
+      :dependencies [
+        [org.clojure/tools.namespace "0.2.11"]]
+      :source-paths ["dev-resources/src"]
+      :repl-options {
+        :init-ns cmr.graph.dev
+        :prompt ~get-prompt
+        :init ~(println (get-banner))}}
     :lint {
       :source-paths ^:replace ["src"]
       :test-paths ^:replace []
@@ -29,7 +55,7 @@
       :plugins [[lein-ltest "0.3.0"]]}
       :server {
         :jvm-opts ["-XX:MaxDirectMemorySize=512g"]
-        :main hexagram30.graphdb.server}}
+        :main hxgm30.graphdb.server}}
   :aliases {
     ;; Dev Aliases
     "ubercompile" ["do"

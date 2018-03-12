@@ -1,8 +1,8 @@
-(ns hexagram30.graphdb.server
+(ns hxgm30.graphdb.server
   (:require
     [clojure.java.io :as io]
     [clojusc.twig :as logger]
-    [hexagram30.graphdb.config :as config]
+    [hxgm30.graphdb.config :as config]
     [taoensso.timbre :as log])
   (:import
     (com.orientechnologies.orient.server OServerMain))

@@ -14,7 +14,7 @@ $ lein start-db
 ```
 
 For use as part of a component-based system, see
-[hexagram30.mush.components.database][comp-graphdb].
+[hxgm30.mush.components.database][comp-graphdb].
 
 
 
