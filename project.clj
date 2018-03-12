@@ -4,19 +4,13 @@
   :license {
     :name "Apache License, Version 2.0"
     :url "http://www.apache.org/licenses/LICENSE-2.0"}
-  :exclusions [
-    [io.aviso/pretty]
-    [org.clojure/tools.namespace]]
   :dependencies [
     [clojusc/twig "0.3.2"]
     [com.orientechnologies/orientdb-core "2.2.33"]
     [com.orientechnologies/orientdb-server "2.2.33"]
     [hexagram30/common "0.1.0-SNAPSHOT"]
-    [io.aviso/pretty "0.1.33"]
     [org.clojure/clojure "1.8.0"]
-    [org.clojure/data.xml "0.0.8"]
-    [org.clojure/tools.logging "0.4.0"]
-    [org.clojure/tools.namespace "0.2.11"]]
+    [org.clojure/data.xml "0.0.8"]]
   :plugins [
     [venantius/ultra "0.5.2"]]
   :profiles {
