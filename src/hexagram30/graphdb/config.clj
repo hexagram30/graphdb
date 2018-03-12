@@ -18,3 +18,7 @@
 (defn db-edn->orientdb-xml
   [parsed-edn]
   )
+
+(defn generate-xml-stream
+  [parsed-edn]
+  "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><orient-server></orient-server>")

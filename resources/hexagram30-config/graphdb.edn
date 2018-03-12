@@ -1,4 +1,8 @@
-{:orientdb {
+{:logging {
+   :nss [com.orientechnologies hexagram30]
+   :level :debug}
+ :orientdb {
+   :home ""
    :httpd {
      :protocol "http"
      :port-range "2480-2490"
@@ -39,3 +43,4 @@
         :value "fine"}
        {:name "plugin.dynamic"
         :value false}]}}}
+}
