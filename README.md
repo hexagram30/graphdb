@@ -13,11 +13,9 @@ Standalone:
 $ lein start-db
 ```
 
-As a component:
+For use as part of a component-based system, see
+[hexagram30.mush.components.database][comp-graphdb].
 
-```
-TBD
-```
 
 
 ## License
@@ -31,3 +29,4 @@ Apache License, Version 2.0
 
 [logo]: https://raw.githubusercontent.com/hexagram30/resources/master/branding/logo/h30-logo-1-long-with-text-x688.png
 [logo-large]: https://raw.githubusercontent.com/hexagram30/resources/master/branding/logo/h30-logo-1-long-with-text-x3440.png
+[comp-graphdb]: https://github.com/hexagram30/hexagramMUSH/blob/master/src/hexagram30/mush/components/database.clj
