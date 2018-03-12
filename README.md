@@ -5,13 +5,19 @@
 [![][logo]][logo-large]
 
 
-## Dependencies
-
-This
-
 ## Usage
 
+Standalone:
+
+```
+$ lein start-db
+```
+
+As a component:
+
+```
 TBD
+```
 
 
 ## License
