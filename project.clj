@@ -25,18 +25,18 @@
     [clojusc/twig "0.3.2"]
     [com.orientechnologies/orientdb-core "2.2.33"]
     [com.orientechnologies/orientdb-server "2.2.33"]
-    [eu.7bridges/clj-odbp "0.2.2"]
     [hexagram30/common "0.1.0-SNAPSHOT"]
     [org.clojure/clojure "1.8.0"]
     [org.clojure/data.xml "0.0.8"]]
-  :plugins [
-    [venantius/ultra "0.5.2"]]
   :profiles {
     :ubercompile {
       :aot :all}
     :dev {
       :dependencies [
         [org.clojure/tools.namespace "0.2.11"]]
+      :plugins [
+        [lein-shell "0.5.0"]
+        [venantius/ultra "0.5.2"]]
       :source-paths ["dev-resources/src"]
       :repl-options {
         :init-ns cmr.graph.dev
@@ -75,6 +75,16 @@
       ;["eastwood"]
       ]
     "ltest" ["with-profile" "+test" "ltest"]
-    "start-db" ["do"
+    ;; Docker database server
+    "docker-db-create"
+      ["shell" "resources/scripts/docker-create.sh"]
+    "docker-db-start"
+      ["shell" "docker" "start" "-i" "hexagram-orientdb"]
+    "docker-db-stop"
+      ["shell" "docker" "stop" "hexagram-orientdb"]
+    "docker-db-destroy"
+      ["shell" "docker" "rm" "hexagram-orientdb"]
+    ;; Embedded database server
+    "embedded-db" ["do"
       ["clean"]
       ["with-profile" "+server" "run"]]})
