@@ -8,5 +8,3 @@ docker create \
   -v `pwd`/data/databases:/orientdb/databases \
   -e ORIENTDB_ROOT_PASSWORD=root \
   orientdb:2.2.33
-
-docker stop hexagram-orientdb
