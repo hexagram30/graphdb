@@ -21,10 +21,10 @@
     :name "Apache License, Version 2.0"
     :url "http://www.apache.org/licenses/LICENSE-2.0"}
   :dependencies [
+    [clojurewerkz/ogre "3.3.1.0"]
     [clojusc/twig "0.3.2"]
     [com.orientechnologies/orientdb-core "2.2.33"]
     [com.orientechnologies/orientdb-server "2.2.33"]
-    [eu.7bridges/clj-odbp "0.2.2"]
     [hexagram30/common "0.1.0-SNAPSHOT"]
     [org.clojure/clojure "1.8.0"]
     [org.clojure/data.xml "0.0.8"]]
