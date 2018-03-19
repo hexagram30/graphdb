@@ -10,7 +10,7 @@
 Standalone:
 
 ```
-$ lein docker-start
+$ lein orientdb
 ```
 
 For use as part of a component-based system, see

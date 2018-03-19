@@ -76,15 +76,5 @@
       ]
     "ltest" ["with-profile" "+test" "ltest"]
     ;; Docker database server
-    "docker-db-create"
-      ["shell" "resources/scripts/docker-create.sh"]
-    "docker-db-start"
-      ["shell" "docker" "start" "-i" "hexagram-orientdb"]
-    "docker-db-stop"
-      ["shell" "docker" "stop" "hexagram-orientdb"]
-    "docker-db-destroy"
-      ["shell" "docker" "rm" "hexagram-orientdb"]
-    ;; Embedded database server
-    "embedded-db" ["do"
-      ["clean"]
-      ["with-profile" "+server" "run"]]})
+    "orientdb" ["shell"
+      "docker-compose" "-f" "resources/docker/docker-compose.yml" "up"]})
