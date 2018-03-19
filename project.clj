@@ -24,6 +24,8 @@
     [clojurewerkz/ogre "3.3.1.0"]
     [clojusc/twig "0.3.2"]
     [com.orientechnologies/orientdb-core "2.2.33"]
+    [com.orientechnologies/orientdb-graphdb "2.2.33"]
+    [com.tinkerpop.blueprints/blueprints-core "2.6.0"]
     [hexagram30/common "0.1.0-SNAPSHOT"]
     [org.clojure/clojure "1.8.0"]
     [org.clojure/data.xml "0.0.8"]]
