@@ -8,5 +8,6 @@ services:
     volumes:
       - ${PWD}/data/backup:/orientdb/backup
       - ${PWD}/data/databases:/orientdb/databases
+    user: "${UID}:${GID}"
     environment:
       ORIENTDB_ROOT_PASSWORD: root
