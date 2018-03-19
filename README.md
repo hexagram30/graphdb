@@ -10,7 +10,7 @@
 Standalone:
 
 ```
-$ lein start-db
+$ lein docker-start
 ```
 
 For use as part of a component-based system, see
