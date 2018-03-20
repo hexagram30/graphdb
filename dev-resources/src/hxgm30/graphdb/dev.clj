@@ -16,8 +16,8 @@
 (def refresh #'repl/refresh)
 
 (def test-spec
-  {:protocol "plocal"
-   :path "./data/databases/test"
+  {:protocol "remote"
+   :path "localhost/test"
    :user "root"
    :password "root"
    :pool {:min-db-instances 1
