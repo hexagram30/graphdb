@@ -58,5 +58,6 @@
   (def f (create-factory test-spec))
   (def g (connect f))
   (add-vertex g {:type :room :name "A cave" :description "You are in a dark cave."})
+  ;; Now visit http://localhost:2480/studio/index.htm and take a look at the nodes
   (disconnect g)
   (destroy-factory f))
