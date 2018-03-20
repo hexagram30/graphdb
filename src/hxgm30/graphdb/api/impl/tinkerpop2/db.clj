@@ -5,7 +5,9 @@
   * https://orientdb.com/docs/2.2.x/Graph-Database-Tinkerpop.html
   * https://orientdb.com/docs/2.2.x/Graph-VE.html
   * https://orientdb.com/javadoc/2.2.x/index.html?com/tinkerpop/blueprints/impls/orient/OrientGraphNoTx.html
-  * https://orientdb.com/javadoc/2.2.x/index.html?com/tinkerpop/blueprints/impls/orient/OrientGraphTx.html")
+  * https://orientdb.com/javadoc/2.2.x/index.html?com/tinkerpop/blueprints/impls/orient/OrientGraphTx.html"
+  (:require
+    [hxgm30.graphdb.util :as util]))
 
 (defn add-edge
   [this src dst label]
@@ -13,7 +15,7 @@
 
 (defn add-vertex
   [this props]
-  (.addVertex this props))
+  (.addVertex this (util/keys->strs props)))
 
 (defn commit
   [this]
