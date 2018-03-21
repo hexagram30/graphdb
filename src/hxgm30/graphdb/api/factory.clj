@@ -1,8 +1,10 @@
 (ns hxgm30.graphdb.api.factory
   (:require
-    [hxgm30.graphdb.api.impl.tinkerpop2.factory :as tinkerpop2])
+    [hxgm30.graphdb.api.impl.bitsy.factory :as bitsy]
+    [hxgm30.graphdb.api.impl.orientdb.factory :as orientdb])
   (:import
-    (com.tinkerpop.blueprints.impls.orient OrientGraphFactory)))
+    (com.tinkerpop.blueprints.impls.orient OrientGraphFactory)
+    (hxgm30.graphdb.api.impl.bitsy.factory BitsyGraphFactory)))
 
 (defprotocol DBFactoryAPI
   (connect [this] [this opts])
@@ -10,9 +12,14 @@
 
 (extend OrientGraphFactory
         DBFactoryAPI
-        tinkerpop2/behaviour)
+        orientdb/behaviour)
+
+(extend BitsyGraphFactory
+        DBFactoryAPI
+        bitsy/behaviour)
 
 (defn create
   [factory-type spec]
   (case factory-type
-    :tinkerpop2 (tinkerpop2/create spec)))
+    :orientdb (orientdb/create spec)
+    :bitsy (bitsy/create spec)))

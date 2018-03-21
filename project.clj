@@ -23,6 +23,8 @@
   :dependencies [
     [clojurewerkz/ogre "3.3.1.0"]
     [clojusc/twig "0.3.2"]
+    [org.clojure/clojure "1.8.0"]
+    [com.lambdazen.bitsy/bitsy "3.0.2"]
     [com.orientechnologies/orientdb-client "2.2.33"]
     [com.orientechnologies/orientdb-core "2.2.33"]
     [com.orientechnologies/orientdb-graphdb "2.2.33"]

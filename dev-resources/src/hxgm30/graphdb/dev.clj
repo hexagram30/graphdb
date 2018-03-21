@@ -11,13 +11,15 @@
     [hxgm30.graphdb.config :as config]
     [trifl.java :refer [show-methods]])
   (:import
-    (com.tinkerpop.blueprints.impls.orient OrientGraphFactory)))
+    (com.lambdazen.bitsy BitsyGraph)
+    (java.net URI)
+    (java.nio.file Paths)))
 
 (logger/set-level! '[hxgm30] :info)
 
 (def refresh #'repl/refresh)
 
-(def test-spec
+(def orientdb-spec
   {:protocol "remote"
    :path "localhost/test"
    :user "root"
@@ -25,8 +27,34 @@
    :pool {:min-db-instances 1
           :max-db-instances 10}})
 
+(def bitsy-spec
+  {:protocol "file"
+   :path "data/bitsy"})
+
 (comment
-  (def f (factory/create :tinkerpop2 test-spec))
+  (def f (factory/create :bitsy bitsy-spec))
+  (def g (factory/connect f))
+  ;; If you haven't created any vertices:
+  (def cave (db/add-vertex g {:type :room :name "A cave" :description "You are in a dark cave."}))
+  (def tunnel (db/add-vertex g {:type :room
+                                :name "A tunnel"
+                                :description "You are in a long, dark tunnel."}))
+  (db/commit g)
+  ;; If you have created the vertices:
+
+  ;; If you haven't created any edges:
+  (def cave->tunnel (db/add-edge g cave, tunnel "has exit"))
+  (def tunnel->cave (db/add-edge g tunnel, cave "has exit"))
+  (db/commit g)
+  ;; If you have created the edges:
+
+  ;; Now visit http://localhost:2480, login, and then take a look at the
+  ;; vertices and edges ...
+  (db/disconnect g)
+  (factory/destroy f))
+
+(comment
+  (def f (factory/create :orientdb orientdb-spec))
   (def g (factory/connect f))
   ;; If you haven't created any vertices:
   (def cave (db/add-vertex g {:type :room

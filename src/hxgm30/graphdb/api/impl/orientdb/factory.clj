@@ -1,4 +1,4 @@
-(ns hxgm30.graphdb.api.impl.tinkerpop2.factory
+(ns hxgm30.graphdb.api.impl.orientdb.factory
   "This is the implementation that's intended to be used with OrientDB v 2.2.x.
 
   Resources for this implementation:
