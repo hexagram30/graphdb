@@ -1,12 +1,14 @@
 (ns hxgm30.graphdb.api.db
   (:require
     [hxgm30.graphdb.api.impl.bitsy.db :as bitsy]
+    [hxgm30.graphdb.api.impl.redis.db :as redis]
     [hxgm30.graphdb.api.impl.tinkerpop2.db :as tinkerpop2])
   (:import
     (com.lambdazen.bitsy BitsyGraph)
     (com.lambdazen.bitsy.wrapper BitsyAutoReloadingGraph)
     (com.tinkerpop.blueprints.impls.orient OrientGraph
-                                           OrientGraphNoTx))
+                                           OrientGraphNoTx)
+    (hxgm30.graphdb.api.impl.redis.db RedisGraph))
   (:refer-clojure :exclude [flush]))
 
 (defprotocol GraphDBAPI
@@ -15,6 +17,7 @@
   (backup [this path])
   (commit [this])
   (configuration [this])
+  (cypher [this query-str])
   (disconnect [this])
   (flush [this])
   (get-edge [this id])
@@ -41,3 +44,7 @@
 (extend BitsyAutoReloadingGraph
         GraphDBAPI
         bitsy/behaviour)
+
+(extend RedisGraph
+        GraphDBAPI
+        redis/behaviour)
