@@ -20,6 +20,7 @@
   (cypher [this query-str])
   (disconnect [this])
   (dump [this])
+  (explain [this query-str])
   (flush [this])
   (get-edge [this id])
   (get-edges [this])

@@ -47,6 +47,11 @@
   [this]
   (-call this :bgsave))
 
+(defn explain
+  [this query-str]
+  (print (-call this :graph.explain (name (:graph-name this)) query-str))
+  :ok)
+
 (defn flush
   [this]
   )
@@ -91,6 +96,7 @@
    :cypher cypher
    :configuration configuration
    :disconnect disconnect
+   :explain explain
    :flush flush
    :get-edge get-edge
    :get-edges get-edges
