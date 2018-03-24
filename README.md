@@ -1,6 +1,6 @@
 # hexagram30/graphdb
 
-*A graph database, built on OrientDB, for use by hexagram30 projects*
+*A graph database, built on Redis, for use by hexagram30 projects*
 
 [![][logo]][logo-large]
 
@@ -10,12 +10,24 @@
 Standalone:
 
 ```
-$ lein orientdb
+$ lein start-redis
 ```
 
 For use as part of a component-based system, see
 [hxgm30.mush.components.database][comp-graphdb].
 
+
+## Resources
+
+* http://redisgraph.io/commands/
+* https://s3.amazonaws.com/artifacts.opencypher.org/openCypher9.pdf
+* https://github.com/ptaoussanis/carmine
+* https://github.com/ptaoussanis/carmine/blob/master/src/taoensso/carmine.clj
+* http://download.redis.io/redis-stable/redis.conf
+
+### Visualisation
+
+* http://graphalchemist.github.io/Alchemy/#/docs
 
 
 ## License
