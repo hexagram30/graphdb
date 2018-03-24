@@ -1,13 +1,9 @@
 version: '3'
 services:
-  orientdb:
-    image: orientdb:2.2.33
+  redis-graph:
+    image: hexagram30/redis-graph:4.0.8
     ports:
-      - "2424:2424"
-      - "2480:2480"
+      - "6379:6379"
     volumes:
-      - ${PWD}/data/backup:/orientdb/backup
-      - ${PWD}/data/databases:/orientdb/databases
+      - ${PWD}/data:/data
     user: "${UID}:${GID}"
-    environment:
-      ORIENTDB_ROOT_PASSWORD: root

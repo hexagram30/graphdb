@@ -81,6 +81,11 @@
       ;["eastwood"]
       ]
     "ltest" ["with-profile" "+test" "ltest"]
-    ;; Docker database server
+    ;; Docker OrientDB graph database server
     "orientdb" ["shell"
-      "docker-compose" "-f" "resources/docker/docker-compose.yml" "up"]})
+      "docker-compose" "-f" "resources/docker/docker-compose-orientdb.yml" "up"]
+    ;; Docker Redis with graph database support
+    "start-redis" ["shell"
+      "docker-compose" "-f" "resources/docker/docker-compose.yml" "up"]
+    "stop-redis" ["shell"
+      "docker-compose" "-f" "resources/docker/docker-compose.yml" "down"]})
