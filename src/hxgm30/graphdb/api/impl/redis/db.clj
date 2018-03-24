@@ -9,11 +9,15 @@
   graph-name])
 
 
-(defn cypher
-  [this query-str]
+(defn- -call
+  [this & args]
   (redis/wcar
     (select-keys this [:spec :pool])
-    (redis/redis-call [:graph.query (name (:graph-name this)) query-str])))
+    (redis/redis-call args)))
+
+(defn cypher
+  [this query-str]
+  (-call this :graph.query (name (:graph-name this)) query-str))
 
 (defn add-edge
   [this]
@@ -24,8 +28,8 @@
   )
 
 (defn backup
-  [this path]
-  )
+  [this]
+  (-call this :bgrewriteaof))
 
 (defn commit
   [this]
@@ -38,6 +42,10 @@
 (defn disconnect
   [this]
   )
+
+(defn dump
+  [this]
+  (-call this :bgsave))
 
 (defn flush
   [this]

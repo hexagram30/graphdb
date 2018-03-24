@@ -41,7 +41,7 @@
 
 (comment
   (def f (factory/create :redis redis-spec))
-  (def g (factory/connect f))
+  (def g (factory/connect :game f))
   ;; If you haven't created any vertices:
   (def cave (db/add-vertex g {:type :room :name "A cave" :description "You are in a dark cave."}))
   (def tunnel (db/add-vertex g {:type :room

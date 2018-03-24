@@ -14,11 +14,12 @@
 (defprotocol GraphDBAPI
   (add-edge [this src dst label])
   (add-vertex [this property-map])
-  (backup [this path])
+  (backup [this] [this path])
   (commit [this])
   (configuration [this])
   (cypher [this query-str])
   (disconnect [this])
+  (dump [this])
   (flush [this])
   (get-edge [this id])
   (get-edges [this])
