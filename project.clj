@@ -22,7 +22,7 @@
     :url "http://www.apache.org/licenses/LICENSE-2.0"}
   :dependencies [
     [clojurewerkz/ogre "3.3.1.0"]
-    [clojusc/twig "0.3.2"]
+    [clojusc/dev-system "0.1.0"]
     [org.clojure/clojure "1.8.0"]
     [com.lambdazen.bitsy/bitsy "3.0.2"]
     [com.orientechnologies/orientdb-client "2.2.33"]
