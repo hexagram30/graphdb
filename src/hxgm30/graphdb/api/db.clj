@@ -13,7 +13,7 @@
 
 (defprotocol GraphDBAPI
   (add-edge [this src dst label])
-  (add-vertex [this property-map])
+  (add-vertex [this] [this property-map])
   (backup [this] [this path])
   (commit [this])
   (configuration [this])

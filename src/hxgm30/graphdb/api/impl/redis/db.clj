@@ -1,6 +1,10 @@
 (ns hxgm30.graphdb.api.impl.redis.db
   (:require
-    [taoensso.carmine :as redis])
+    [clojure.string :as string]
+    [hxgm30.graphdb.api.impl.redis.queries :as queries]
+    [hxgm30.graphdb.api.impl.redis.util :as util]
+    [taoensso.carmine :as redis]
+    [taoensso.timbre :as log])
   (:refer-clojure :exclude [flush]))
 
 (defrecord RedisGraph [
@@ -8,9 +12,13 @@
   pool
   graph-name])
 
-
 (defn- -call
   [this & args]
+  (log/debug "Making call to Redis:" args)
+  (log/debugf "Native format: %s %s \"%s\""
+              (string/upper-case (name (first args)))
+              (name (second args))
+              (nth args 2))
   (redis/wcar
     (select-keys this [:spec :pool])
     (redis/redis-call args)))
@@ -23,9 +31,17 @@
   [this]
   )
 
+(defn add-vertices
+  [this nodes-props]
+  (cypher this))
+
 (defn add-vertex
-  [this props]
-  )
+  ([this]
+    (cypher this queries/create-simple-node))
+  ([this props]
+    (add-vertex this (:label props) (dissoc props :label)))
+  ([this label props]
+    (cypher)))
 
 (defn backup
   [this]
@@ -70,7 +86,7 @@
 
 (defn get-vertices
   [this]
-  )
+  (cypher this queries/match-all-nodes))
 
 (defn remove-edge
   [this]
