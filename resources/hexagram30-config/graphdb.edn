@@ -2,6 +2,11 @@
  :logging {
    :nss [com.orientechnologies hxgm30]
    :level :debug}
+ :redis {
+   :host "localhost"
+   :port 6379
+   :graph {
+     :db :game}}
  :orientdb {
    :home ""
    :httpd
