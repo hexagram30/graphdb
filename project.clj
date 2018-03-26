@@ -61,9 +61,9 @@
       :jvm-opts ["-XX:MaxDirectMemorySize=512g"]
       :main hxgm30.graphdb.server}
     :bitsy-plugin {
-      :source-paths ["plugins/bitsy/src"]}
+      :source-paths ["plugins/bitsy"]}
     :orientdb-plugin {
-      :source-paths ["plugins/orientdb/src"]
+      :source-paths ["plugins/orientdb"]
       :aliases {
         "start-db" ["shell"
           "docker-compose"
@@ -74,7 +74,7 @@
             "-f" "resources/docker/docker-compose-orientdb.yml"
             "down"]}}
     :redisgraph-plugin {
-      :source-paths ["plugins/redis/src"]
+      :source-paths ["plugins/redis"]
       :dependencies [
         [com.taoensso/carmine "2.18.0"]]
       :aot [hxgm30.graphdb.plugin.redis.api.db
