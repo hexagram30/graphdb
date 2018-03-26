@@ -1,14 +1,14 @@
 (ns hxgm30.graphdb.api.db
   (:require
     [hxgm30.graphdb.api.impl.bitsy.db :as bitsy]
-    [hxgm30.graphdb.api.impl.redis.db :as redis]
-    [hxgm30.graphdb.api.impl.tinkerpop2.db :as tinkerpop2])
+    [hxgm30.graphdb.api.impl.tinkerpop2.db :as tinkerpop2]
+    [hxgm30.graphdb.util :as util]
+    [taoensso.timbre :as log])
   (:import
     (com.lambdazen.bitsy BitsyGraph)
     (com.lambdazen.bitsy.wrapper BitsyAutoReloadingGraph)
     (com.tinkerpop.blueprints.impls.orient OrientGraph
-                                           OrientGraphNoTx)
-    (hxgm30.graphdb.api.impl.redis.db RedisGraph))
+                                           OrientGraphNoTx))
   (:refer-clojure :exclude [flush]))
 
 (defprotocol GraphDBAPI
@@ -47,6 +47,13 @@
         GraphDBAPI
         bitsy/behaviour)
 
-(extend RedisGraph
-        GraphDBAPI
-        redis/behaviour)
+(try
+  (when-let [backend-class (util/import-class 'hxgm30.graphdb.plugin.redis.api.db.RedisGraph)]
+    (require '[hxgm30.graphdb.plugin.redis.api.db])
+    (when-let [backend-ns (util/require-ns 'hxgm30.graphdb.plugin.redis.api.db)]
+      (extend backend-class
+              GraphDBAPI
+              (ns-resolve backend-ns 'behaviour))
+      (log/debug "Extended Redis db.")))
+  (catch Exception _
+    (log/debug "Redis backend is not enabled; not extending.")))

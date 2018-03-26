@@ -24,18 +24,6 @@
   [system]
   (get-in (get-cfg system) [:logging :nss]))
 
-(defn redis-host
-  [system]
-  (get-in (get-cfg system) [:redis :host]))
-
-(defn redis-port
-  [system]
-  (get-in (get-cfg system) [:redis :port]))
-
-(defn redis-graph-db
-  [system]
-  (get-in (get-cfg system) [:redis :graph :db]))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Component Lifecycle Implementation   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

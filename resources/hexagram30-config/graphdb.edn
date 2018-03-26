@@ -2,38 +2,41 @@
  :logging {
    :nss [com.orientechnologies hxgm30]
    :level :debug}
- :redis {
-   :host "localhost"
-   :port 6379
-   :graph {
-     :db :game}}
- :orientdb {
-   :home ""
-   :httpd
-    [:listener {:protocol "http" :port-range "2480-2490" :ip-address "0.0.0.0"}
-     [:commands
-      [:command {:implementation "com.orientechnologies.orient.server.network.protocol.http.command.get.OServerCommandGetStaticContent"
-                 :pattern "GET|www GET|studio/ GET| GET|*.htm GET|*.html GET|*.xml GET|*.jpeg GET|*.jpg GET|*.png GET|*.gif GET|*.js GET|*.css GET|*.swf GET|*.ico GET|*.txt GET|*.otf GET|*.pjs GET|*.svg"}
-       [:parameters
-        [:emtry {:name "http.cache:*.htm *.html"
-                 :value "Cache-Control: no-cache, no-store, max-age=0, must-revalidate\r\nPragma: no-cache"}]
-        [:entry {:name "http.cache:default" :value "Cache-Control: max-age=120"}]]]]]
-   :db
-    [:orient-server
-     [:network
-      [:protocols
-       [:protocol {:name "binary" :implementation "com.orientechnologies.orient.server.network.protocol.binary.ONetworkProtocolBinary"}]
-       [:protocol {:name "http" :implmentation "com.orientechnologies.orient.server.network.protocol.http.ONetworkProtocolHttpDb"}]]
-      [:listeners
-       [:listener {:ip-address "0.0.0.0" :port-range "2424-2439" :protocol "binary"}]
-       [:listener {:ip-address "0.0.0.0" :port-range "2480-2490" :protocol "http"}]]]
-    [:users
-     [:user {:name "root" :resources "*"}]]
-    [:properties
-      [:entry {:name "server.cache.staticResources" :value false}]
-      [:entry {:name "log.console.level" :value "info"}]
-      [:entry {:name "log.file.level" :value "fine"}]
-      [:entry {:name "plugin.dynamic" :value false}]
-      ; [:entry {:name "network.ssl.keyStore" :value "resources/hexagram30-config/cert/orientdb.ks"}]
-      ; [:entry {:name "server.security.file" :value "resources/hexagram30-config/security.json"}]
-      ]]}}
+ :backdend {
+   :plugin :redis
+   :janus {}
+   :orientdb {
+     :home ""
+     :httpd
+      [:listener {:protocol "http" :port-range "2480-2490" :ip-address "0.0.0.0"}
+       [:commands
+        [:command {:implementation "com.orientechnologies.orient.server.network.protocol.http.command.get.OServerCommandGetStaticContent"
+                   :pattern "GET|www GET|studio/ GET| GET|*.htm GET|*.html GET|*.xml GET|*.jpeg GET|*.jpg GET|*.png GET|*.gif GET|*.js GET|*.css GET|*.swf GET|*.ico GET|*.txt GET|*.otf GET|*.pjs GET|*.svg"}
+         [:parameters
+          [:emtry {:name "http.cache:*.htm *.html"
+                   :value "Cache-Control: no-cache, no-store, max-age=0, must-revalidate\r\nPragma: no-cache"}]
+          [:entry {:name "http.cache:default" :value "Cache-Control: max-age=120"}]]]]]
+     :db
+      [:orient-server
+       [:network
+        [:protocols
+         [:protocol {:name "binary" :implementation "com.orientechnologies.orient.server.network.protocol.binary.ONetworkProtocolBinary"}]
+         [:protocol {:name "http" :implmentation "com.orientechnologies.orient.server.network.protocol.http.ONetworkProtocolHttpDb"}]]
+        [:listeners
+         [:listener {:ip-address "0.0.0.0" :port-range "2424-2439" :protocol "binary"}]
+         [:listener {:ip-address "0.0.0.0" :port-range "2480-2490" :protocol "http"}]]]
+      [:users
+       [:user {:name "root" :resources "*"}]]
+      [:properties
+        [:entry {:name "server.cache.staticResources" :value false}]
+        [:entry {:name "log.console.level" :value "info"}]
+        [:entry {:name "log.file.level" :value "fine"}]
+        [:entry {:name "plugin.dynamic" :value false}]
+        ; [:entry {:name "network.ssl.keyStore" :value "resources/hexagram30-config/cert/orientdb.ks"}]
+        ; [:entry {:name "server.security.file" :value "resources/hexagram30-config/security.json"}]
+        ]]}
+   :redis {
+     :host "localhost"
+     :port 6379
+     :graph {
+       :db :game}}}}

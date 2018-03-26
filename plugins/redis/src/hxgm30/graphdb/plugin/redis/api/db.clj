@@ -1,8 +1,8 @@
-(ns hxgm30.graphdb.api.impl.redis.db
+(ns hxgm30.graphdb.plugin.redis.api.db
   (:require
     [clojure.string :as string]
-    [hxgm30.graphdb.api.impl.redis.queries :as queries]
-    [hxgm30.graphdb.api.impl.redis.util :as util]
+    [hxgm30.graphdb.plugin.redis.api.queries :as queries]
+    [hxgm30.graphdb.plugin.redis.api.util :as util]
     [taoensso.carmine :as redis]
     [taoensso.timbre :as log])
   (:refer-clojure :exclude [flush]))

@@ -1,4 +1,4 @@
-(ns hxgm30.graphdb.api.impl.redis.queries)
+(ns hxgm30.graphdb.plugin.redis.api.queries)
 
 (def create-simple-node
   "CREATE (n)")

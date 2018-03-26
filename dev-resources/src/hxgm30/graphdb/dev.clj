@@ -1,6 +1,5 @@
 (ns hxgm30.graphdb.dev
   (:require
-    [clojure.data.xml :as xml]
     [clojure.java.io :as io]
     [clojure.pprint :refer [pprint]]
     [clojure.tools.namespace.repl :as repl]
@@ -12,8 +11,7 @@
     [hxgm30.graphdb.api.factory :as factory]
     [hxgm30.graphdb.components.config :as config]
     [hxgm30.graphdb.components.core]
-    [hxgm30.graphdb.components.redis :as redis]
-    [taoensso.carmine :as car]
+    [hxgm30.graphdb.util :as util]
     [trifl.java :refer [show-methods]])
   (:import
     (com.lambdazen.bitsy BitsyGraph)
@@ -104,17 +102,17 @@
 ;;;   Data   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn conn
-  []
-  (redis/get-conn (system)))
+; (defn conn
+;   []
+;   (redis/get-conn (system)))
 
-(defn cypher
-  [query-str]
-  (db/cypher (conn) query-str))
+; (defn cypher
+;   [query-str]
+;   (db/cypher (conn) query-str))
 
-(defn dump
-  []
-  (db/dump (conn)))
+; (defn dump
+;   []
+;   (db/dump (conn)))
 
 (comment
   (def f (factory/create :redis redis-spec))

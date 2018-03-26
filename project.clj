@@ -28,11 +28,9 @@
     [com.orientechnologies/orientdb-client "2.2.33"]
     [com.orientechnologies/orientdb-core "2.2.33"]
     [com.orientechnologies/orientdb-graphdb "2.2.33"]
-    [com.taoensso/carmine "2.18.0"]
     [com.tinkerpop.blueprints/blueprints-core "2.6.0"]
     [hexagram30/common "0.1.0-SNAPSHOT"]
-    [org.clojure/clojure "1.8.0"]
-    [org.clojure/data.xml "0.0.8"]]
+    [org.clojure/clojure "1.8.0"]]
   :profiles {
     :ubercompile {
       :aot :all}
@@ -59,11 +57,42 @@
         [venantius/yagni "0.1.4"]]}
     :test {
       :plugins [[lein-ltest "0.3.0"]]}
-      :server {
-        :jvm-opts ["-XX:MaxDirectMemorySize=512g"]
-        :main hxgm30.graphdb.server}}
+    :server {
+      :jvm-opts ["-XX:MaxDirectMemorySize=512g"]
+      :main hxgm30.graphdb.server}
+    :bitsy-plugin {
+      :source-paths ["plugins/bitsy/src"]}
+    :orientdb-plugin {
+      :source-paths ["plugins/orientdb/src"]
+      :aliases {
+        "start-db" ["shell"
+          "docker-compose"
+            "-f" "resources/docker/docker-compose-orientdb.yml"
+            "up"]
+        "stop-db" ["shell"
+          "docker-compose"
+            "-f" "resources/docker/docker-compose-orientdb.yml"
+            "down"]}}
+    :redisgraph-plugin {
+      :source-paths ["plugins/redis/src"]
+      :dependencies [
+        [com.taoensso/carmine "2.18.0"]]
+      :aot [hxgm30.graphdb.plugin.redis.api.db
+            hxgm30.graphdb.plugin.redis.api.factory]
+      :aliases {
+        "start-db" ["shell"
+          "docker-compose"
+            "-f" "resources/docker/docker-compose-redis.yml"
+            "up"]
+        "stop-db" ["shell"
+          "docker-compose"
+            "-f" "resources/docker/docker-compose-redis.yml"
+            "down"]}}}
   :aliases {
     ;; Dev Aliases
+    "repl" ["do"
+      ["clean"]
+      ["repl"]]
     "ubercompile" ["do"
       ["clean"]
       ["with-profile" "+ubercompile" "compile"]]
@@ -80,12 +109,4 @@
       ["kibit"]
       ;["eastwood"]
       ]
-    "ltest" ["with-profile" "+test" "ltest"]
-    ;; Docker OrientDB graph database server
-    "orientdb" ["shell"
-      "docker-compose" "-f" "resources/docker/docker-compose-orientdb.yml" "up"]
-    ;; Docker Redis with graph database support
-    "start-redis" ["shell"
-      "docker-compose" "-f" "resources/docker/docker-compose.yml" "up"]
-    "stop-redis" ["shell"
-      "docker-compose" "-f" "resources/docker/docker-compose.yml" "down"]})
+    "ltest" ["with-profile" "+test" "ltest"]})

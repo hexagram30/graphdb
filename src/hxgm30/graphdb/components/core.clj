@@ -3,7 +3,7 @@
     [com.stuartsierra.component :as component]
     [hxgm30.graphdb.components.config :as config]
     [hxgm30.graphdb.components.logging :as logging]
-    [hxgm30.graphdb.components.redis :as redis]))
+    [hxgm30.graphdb.plugin.backend :as backend]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Common Configuration Components   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -17,10 +17,10 @@
              (logging/create-component)
              [:config])})
 
-(def redis
-  {:redis (component/using
-           (redis/create-component)
-           [:config :logging])})
+(def backend
+  {:backend (component/using
+             (backend/create-component)
+             (backend/get-component-deps))})
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Component Initializations   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -32,19 +32,19 @@
     (merge cfg
            log)))
 
-(defn initialize-with-db
+(defn initialize-with-backend
   []
   (component/map->SystemMap
     (merge cfg
            log
-           redis)))
+           backend)))
 
 (def init-lookup
   {:basic #'initialize-bare-bones
-   :db #'initialize-with-db})
+   :backend #'initialize-with-backend})
 
 (defn init
   ([]
-    (init :db))
+    (init :backend))
   ([mode]
     ((mode init-lookup))))

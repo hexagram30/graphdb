@@ -1,10 +1,32 @@
-(ns hxgm30.graphdb.components.redis
+(ns hxgm30.graphdb.plugin.redis.component
   (:require
     [hxgm30.graphdb.components.config :as config]
     [hxgm30.graphdb.api.db :as db]
     [hxgm30.graphdb.api.factory :as factory]
     [com.stuartsierra.component :as component]
     [taoensso.timbre :as log]))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Component Dependencies   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def component-deps [:config :logging])
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Redis Config   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn redis-host
+  [system]
+  (get-in (config/get-cfg system) [:redis :host]))
+
+(defn redis-port
+  [system]
+  (get-in (config/get-cfg system) [:redis :port]))
+
+(defn redis-graph-db
+  [system]
+  (get-in (config/get-cfg system) [:redis :graph :db]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Redis Component API   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
