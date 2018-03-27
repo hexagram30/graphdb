@@ -2,10 +2,19 @@
  :logging {
    :nss [com.orientechnologies hxgm30]
    :level :debug}
- :backdend {
+ :backend {
    :plugin :redis
+   :bitsy {
+     :protocol "file"
+     :path "data/bitsy"}
    :janus {}
    :orientdb {
+     :protocol "remote"
+     :path "localhost/test"
+     :user "root"
+     :password "root"
+     :pool {:min-db-instances 1
+            :max-db-instances 10}
      :home ""
      :httpd
       [:listener {:protocol "http" :port-range "2480-2490" :ip-address "0.0.0.0"}

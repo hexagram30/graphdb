@@ -1,8 +1,8 @@
-(ns hxgm30.graphdb.plugin.redis.component
+(ns hxgm30.graphdb.plugin.bitsy.component
   (:require
     [hxgm30.graphdb.components.config :as config]
-    [hxgm30.graphdb.plugin.redis.api.db :as db]
-    [hxgm30.graphdb.plugin.redis.api.factory :as factory]
+    [hxgm30.graphdb.plugin.bitsy.api.db :as db]
+    [hxgm30.graphdb.plugin.bitsy.api.factory :as factory]
     [com.stuartsierra.component :as component]
     [taoensso.timbre :as log]))
 
@@ -13,29 +13,25 @@
 (def component-deps [:config :logging])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;   Redis Config   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Bitsy Config   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn redis-host
+(defn bitsy-protocol
   [system]
-  (get-in (config/get-cfg system) [:backend :redis :host]))
+  (get-in (config/get-cfg system) [:backend :bitsy :protocol]))
 
-(defn redis-port
+(defn bitsy-path
   [system]
-  (get-in (config/get-cfg system) [:backend :redis :port]))
-
-(defn redis-graph-db
-  [system]
-  (get-in (config/get-cfg system) [:backend :redis :graph :db]))
+  (get-in (config/get-cfg system) [:backend :bitsy :path]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;   Redis Component API   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Bitsy Component API   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn get-spec
   [system]
-  {:host (redis-host this)
-   :port (redis-port this)})
+  {:protocol (bitsy-protocol this)
+   :path (bitsy-path this)})
 
 (defn get-conn
   [system]
@@ -45,27 +41,27 @@
 ;;;   Component Lifecycle Implementation   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defrecord Redis [conn])
+(defrecord Bitsy [conn])
 
 (defn start
   [this]
-  (log/info "Starting Redis component ...")
+  (log/info "Starting Bitsy component ...")
   (let [f (factory/create (get-spec this))
-        conn (factory/connect f (redis-graph-db this))]
-    (log/debug "Started Redis component.")
+        conn (factory/connect f)]
+    (log/debug "Started Bitsy component.")
     (assoc this :conn conn)))
 
 (defn stop
   [this]
-  (log/info "Stopping Redis component ...")
-  (log/debug "Stopped Redis component.")
+  (log/info "Stopping Bitsy component ...")
+  (log/debug "Stopped Bitsy component.")
   (assoc this :conn nil))
 
 (def lifecycle-behaviour
   {:start start
    :stop stop})
 
-(extend Redis
+(extend Bitsy
   component/Lifecycle
   lifecycle-behaviour)
 
@@ -76,4 +72,4 @@
 (defn create-component
   ""
   []
-  (map->Redis {}))
+  (map->Bitsy {}))

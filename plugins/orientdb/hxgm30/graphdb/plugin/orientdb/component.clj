@@ -1,8 +1,8 @@
-(ns hxgm30.graphdb.plugin.redis.component
+(ns hxgm30.graphdb.plugin.orientdb.component
   (:require
     [hxgm30.graphdb.components.config :as config]
-    [hxgm30.graphdb.plugin.redis.api.db :as db]
-    [hxgm30.graphdb.plugin.redis.api.factory :as factory]
+    [hxgm30.graphdb.plugin.orientdb.api.db :as db]
+    [hxgm30.graphdb.plugin.orientdb.api.factory :as factory]
     [com.stuartsierra.component :as component]
     [taoensso.timbre :as log]))
 
@@ -13,29 +13,40 @@
 (def component-deps [:config :logging])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;   Redis Config   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   OrientDB Config   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn redis-host
+(defn orientdb-protocol
   [system]
-  (get-in (config/get-cfg system) [:backend :redis :host]))
+  (get-in (config/get-cfg system) [:backend :orientdb :protocol]))
 
-(defn redis-port
+(defn orientdb-path
   [system]
-  (get-in (config/get-cfg system) [:backend :redis :port]))
+  (get-in (config/get-cfg system) [:backend :orientdb :path]))
 
-(defn redis-graph-db
+(defn orientdb-user
   [system]
-  (get-in (config/get-cfg system) [:backend :redis :graph :db]))
+  (get-in (config/get-cfg system) [:backend :orientdb :user]))
+
+(defn orientdb-password
+  [system]
+  (get-in (config/get-cfg system) [:backend :orientdb :password]))
+
+(defn orientdb-pool
+  [system]
+  (get-in (config/get-cfg system) [:backend :orientdb :pool]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;   Redis Component API   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   OrientDB Component API   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn get-spec
   [system]
-  {:host (redis-host this)
-   :port (redis-port this)})
+  {:protocol (orientdb-protocol system)
+   :path (orientdb-path system)
+   :user (orientdb-user system)
+   :password (orientdb-password system)
+   :pool (orientdb-pool system)})
 
 (defn get-conn
   [system]
@@ -45,27 +56,27 @@
 ;;;   Component Lifecycle Implementation   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defrecord Redis [conn])
+(defrecord OrientDB [conn])
 
 (defn start
   [this]
-  (log/info "Starting Redis component ...")
+  (log/info "Starting OrientDB component ...")
   (let [f (factory/create (get-spec this))
-        conn (factory/connect f (redis-graph-db this))]
-    (log/debug "Started Redis component.")
+        conn (factory/connect f)]
+    (log/debug "Started OrientDB component.")
     (assoc this :conn conn)))
 
 (defn stop
   [this]
-  (log/info "Stopping Redis component ...")
-  (log/debug "Stopped Redis component.")
+  (log/info "Stopping OrientDB component ...")
+  (log/debug "Stopped OrientDB component.")
   (assoc this :conn nil))
 
 (def lifecycle-behaviour
   {:start start
    :stop stop})
 
-(extend Redis
+(extend OrientDB
   component/Lifecycle
   lifecycle-behaviour)
 
@@ -76,4 +87,4 @@
 (defn create-component
   ""
   []
-  (map->Redis {}))
+  (map->OrientDB {}))

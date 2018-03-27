@@ -9,20 +9,26 @@
   pool
   graph-name])
 
-(defn connect
+(defn- -connect
   ([this]
-    (connect this (:graph-name this)))
+    (-connect this (:graph-name this)))
   ([this graph-name]
     (redis/map->RedisGraph (merge this {:graph-name graph-name}))))
 
-(defn destroy
+(defn- -destroy
   [this]
   ;; No-op
   )
 
 (def behaviour
-  {:connect connect
-   :destroy destroy})
+  {:connect -connect
+   :destroy -destroy})
+
+(load "/hxgm30/graphdb/api/protocols/factory")
+
+(extend RedisGraphFactory
+        DBFactoryAPI
+        behaviour)
 
 (defn create
   ([spec]

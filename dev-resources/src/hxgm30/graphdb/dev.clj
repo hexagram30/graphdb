@@ -3,18 +3,17 @@
     [clojure.java.io :as io]
     [clojure.pprint :refer [pprint]]
     [clojure.tools.namespace.repl :as repl]
-    [clojurewerkz.ogre.core :as ogre]
+    ;[clojurewerkz.ogre.core :as ogre]
     [clojusc.dev.system.core :as system-api]
     [clojusc.twig :as logger]
     [com.stuartsierra.component :as component]
-    [hxgm30.graphdb.api.db :as db]
-    [hxgm30.graphdb.api.factory :as factory]
     [hxgm30.graphdb.components.config :as config]
     [hxgm30.graphdb.components.core]
+    [hxgm30.graphdb.plugin.backend :as backend]
     [hxgm30.graphdb.util :as util]
     [trifl.java :refer [show-methods]])
   (:import
-    (com.lambdazen.bitsy BitsyGraph)
+    ;(com.lambdazen.bitsy BitsyGraph)
     (java.net URI)
     (java.nio.file Paths)))
 
@@ -78,25 +77,6 @@
   (repl/refresh :after 'hxgm30.graphdb.dev/startup))
 
 (def refresh #'repl/refresh)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;   Test Specs   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(def orientdb-spec
-  {:protocol "remote"
-   :path "localhost/test"
-   :user "root"
-   :password "root"
-   :pool {:min-db-instances 1
-          :max-db-instances 10}})
-
-(def bitsy-spec
-  {:protocol "file"
-   :path "data/bitsy"})
-
-(def redis-spec
-  {:host "localhost"})
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Data   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

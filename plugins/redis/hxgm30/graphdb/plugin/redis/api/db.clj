@@ -23,102 +23,108 @@
     (select-keys this [:spec :pool])
     (redis/redis-call args)))
 
-(defn cypher
+(defn- -cypher
   [this query-str]
   (-call this :graph.query (name (:graph-name this)) query-str))
 
-(defn add-edge
+(defn- -add-edge
   [this]
   )
 
-(defn add-vertices
+(defn- -add-vertices
   [this nodes-props]
-  (cypher this))
+  (-cypher this))
 
-(defn add-vertex
+(defn- -add-vertex
   ([this]
-    (cypher this queries/create-simple-node))
+    (-cypher this queries/create-simple-node))
   ([this props]
-    (add-vertex this (:label props) (dissoc props :label)))
+    (-add-vertex this (:label props) (dissoc props :label)))
   ([this label props]
-    (cypher)))
+    (-cypher)))
 
-(defn backup
+(defn- -backup
   [this]
   (-call this :bgrewriteaof))
 
-(defn commit
+(defn- -commit
   [this]
   )
 
-(defn configuration
+(defn- -configuration
   [this]
   )
 
-(defn disconnect
+(defn- -disconnect
   [this]
   )
 
-(defn dump
+(defn- -dump
   [this]
   (-call this :bgsave))
 
-(defn explain
+(defn- -explain
   [this query-str]
   (print (-call this :graph.explain (name (:graph-name this)) query-str))
   :ok)
 
-(defn flush
+(defn- -flush
   [this]
   )
 
-(defn get-edge
+(defn- -get-edge
   [this]
   )
 
-(defn get-edges
+(defn- -get-edges
   [this]
   )
 
-(defn get-vertex
+(defn- -get-vertex
   [this id]
   )
 
-(defn get-vertices
+(defn- -get-vertices
   [this]
-  (cypher this queries/match-all-nodes))
+  (-cypher this queries/match-all-nodes))
 
-(defn remove-edge
-  [this]
-  )
-
-(defn remove-vertex
+(defn- -remove-edge
   [this]
   )
 
-(defn rollback
+(defn- -remove-vertex
   [this]
   )
 
-(defn show-features
+(defn- -rollback
+  [this]
+  )
+
+(defn- -show-features
   [this]
   )
 
 (def behaviour
-  {:add-edge add-edge
-   :add-vertex add-vertex
-   :backup backup
-   :commit commit
-   :cypher cypher
-   :configuration configuration
-   :disconnect disconnect
-   :explain explain
-   :flush flush
-   :get-edge get-edge
-   :get-edges get-edges
-   :get-vertex get-vertex
-   :get-vertices get-vertices
-   :remove-edge remove-edge
-   :remove-vertex remove-vertex
-   :rollback rollback
-   :show-features show-features})
+  {:add-edge -add-edge
+   :add-vertex -add-vertex
+   :backup -backup
+   :commit -commit
+   :cypher -cypher
+   :configuration -configuration
+   :disconnect -disconnect
+   :explain -explain
+   :flush -flush
+   :get-edge -get-edge
+   :get-edges -get-edges
+   :get-vertex -get-vertex
+   :get-vertices -get-vertices
+   :remove-edge -remove-edge
+   :remove-vertex -remove-vertex
+   :rollback -rollback
+   :show-features -show-features})
+
+(load "/hxgm30/graphdb/api/protocols/db")
+
+(extend RedisGraph
+        GraphDBAPI
+        behaviour)

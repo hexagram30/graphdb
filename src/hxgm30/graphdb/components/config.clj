@@ -58,5 +58,5 @@
 
 (defn create-component
   ""
-  []
-  (map->Config {}))
+  [data]
+  (map->Config {:data data}))

@@ -8,23 +8,30 @@
   * https://orientdb.com/docs/2.2.x/Graph-Database-Tinkerpop.html
   * https://orientdb.com/javadoc/2.2.x/index.html?com/tinkerpop/blueprints/impls/orient/OrientGraphFactory.html"
   (:import
-    (com.tinkerpop.blueprints.impls.orient OrientGraphFactory)))
+    (com.tinkerpop.blueprints.impls.orient OrientGraphFactory))
+  (:refer-clojure :exclude [flush]))
 
-(defn connect
+(defn- -connect
   ([this]
-    (connect this {}))
+    (-connect this {}))
   ([this opts]
     (if (= false (:transactional? opts))
       (.getNoTx this)
       (.getTx this))))
 
-(defn destroy
+(defn- -destroy
   [this]
   (.close this))
 
 (def behaviour
-  {:connect connect
-   :destroy destroy})
+  {:connect -connect
+   :destroy -destroy})
+
+(load "/hxgm30/graphdb/api/protocols/factory")
+
+(extend OrientGraphFactory
+        DBFactoryAPI
+        behaviour)
 
 (defn create
   [spec]

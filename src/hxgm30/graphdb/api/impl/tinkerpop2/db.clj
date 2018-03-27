@@ -1,13 +1,5 @@
-(ns hxgm30.graphdb.api.impl.tinkerpop2.db
-  "This is the implementation that's intended to be used with OrientDB v 2.2.x.
-
-  Resources for this implementation:
-  * https://orientdb.com/docs/2.2.x/Graph-Database-Tinkerpop.html
-  * https://orientdb.com/docs/2.2.x/Graph-VE.html
-  * https://orientdb.com/javadoc/2.2.x/index.html?com/tinkerpop/blueprints/impls/orient/OrientGraphNoTx.html
-  * https://orientdb.com/javadoc/2.2.x/index.html?com/tinkerpop/blueprints/impls/orient/OrientGraphTx.html"
-  (:require
-    [hxgm30.graphdb.util :as util]))
+;;;; Note that this file is intended to be loaded by plugins supporting the
+;;;; TinkerPop2 API.
 
 (defn add-edge
   [this src dst label]
@@ -53,7 +45,7 @@
   [this]
   (.rollback this))
 
-(def behaviour
+(def tinkerpop2-behaviour
   {:add-edge add-edge
    :add-vertex add-vertex
    :commit commit

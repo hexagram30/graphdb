@@ -21,14 +21,7 @@
     :name "Apache License, Version 2.0"
     :url "http://www.apache.org/licenses/LICENSE-2.0"}
   :dependencies [
-    [clojurewerkz/ogre "3.3.1.0"]
     [clojusc/dev-system "0.1.0"]
-    [org.clojure/clojure "1.8.0"]
-    [com.lambdazen.bitsy/bitsy "3.0.2"]
-    [com.orientechnologies/orientdb-client "2.2.33"]
-    [com.orientechnologies/orientdb-core "2.2.33"]
-    [com.orientechnologies/orientdb-graphdb "2.2.33"]
-    [com.tinkerpop.blueprints/blueprints-core "2.6.0"]
     [hexagram30/common "0.1.0-SNAPSHOT"]
     [org.clojure/clojure "1.8.0"]]
   :profiles {
@@ -56,14 +49,23 @@
         [lein-kibit "0.1.6"]
         [venantius/yagni "0.1.4"]]}
     :test {
-      :plugins [[lein-ltest "0.3.0"]]}
+      :plugins [
+        [lein-ltest "0.3.0"]]}
     :server {
       :jvm-opts ["-XX:MaxDirectMemorySize=512g"]
       :main hxgm30.graphdb.server}
     :bitsy-plugin {
-      :source-paths ["plugins/bitsy"]}
+      :source-paths ["plugins/bitsy"]
+      :dependencies [
+        [com.lambdazen.bitsy/bitsy "3.0.2"]]}
     :orientdb-plugin {
       :source-paths ["plugins/orientdb"]
+      :dependencies [
+        [clojurewerkz/ogre "3.3.1.0"]
+        [com.orientechnologies/orientdb-client "2.2.33"]
+        [com.orientechnologies/orientdb-core "2.2.33"]
+        [com.orientechnologies/orientdb-graphdb "2.2.33"]
+        [com.tinkerpop.blueprints/blueprints-core "2.6.0"]]
       :aliases {
         "start-db" ["shell"
           "docker-compose"
@@ -78,7 +80,8 @@
       :dependencies [
         [com.taoensso/carmine "2.18.0"]]
       :aot [hxgm30.graphdb.plugin.redis.api.db
-            hxgm30.graphdb.plugin.redis.api.factory]
+            hxgm30.graphdb.plugin.redis.api.factory
+            hxgm30.graphdb.plugin.redis.component]
       :aliases {
         "start-db" ["shell"
           "docker-compose"
