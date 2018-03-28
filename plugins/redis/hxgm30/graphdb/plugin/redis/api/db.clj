@@ -1,4 +1,11 @@
 (ns hxgm30.graphdb.plugin.redis.api.db
+  "Items of interest for implementors:
+
+  * http://redisgraph.io/commands/
+  * https://s3.amazonaws.com/artifacts.opencypher.org/openCypher9.pdf
+  * https://github.com/ptaoussanis/carmine
+  * https://github.com/ptaoussanis/carmine/blob/master/src/taoensso/carmine.clj
+  * http://download.redis.io/redis-stable/redis.conf"
   (:require
     [clojure.string :as string]
     [hxgm30.graphdb.plugin.redis.api.queries :as queries]

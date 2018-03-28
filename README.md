@@ -33,11 +33,9 @@ files nested under the `plugins` directory.
 
 ## Resources
 
+* https://github.com/lambdazen/bitsy
+* https://orientdb.com/docs/last/index.html
 * http://redisgraph.io/commands/
-* https://s3.amazonaws.com/artifacts.opencypher.org/openCypher9.pdf
-* https://github.com/ptaoussanis/carmine
-* https://github.com/ptaoussanis/carmine/blob/master/src/taoensso/carmine.clj
-* http://download.redis.io/redis-stable/redis.conf
 
 ### Visualisation
 
