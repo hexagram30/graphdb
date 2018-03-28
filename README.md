@@ -27,8 +27,8 @@ Then call `(startup)` and `(shutdown)` to manage the associated components,
 connecting to the database indicated in the plugin.
 
 
-For use as part of a component-based system, see
-[hxgm30.mush.components.database][comp-graphdb].
+For use as part of a component-based system, see any of the `component.clj`
+files nested under the `plugins` directory.
 
 
 ## Resources
