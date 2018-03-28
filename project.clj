@@ -21,18 +21,9 @@
     :name "Apache License, Version 2.0"
     :url "http://www.apache.org/licenses/LICENSE-2.0"}
   :dependencies [
-    [clojurewerkz/ogre "3.3.1.0"]
     [clojusc/dev-system "0.1.0"]
-    [org.clojure/clojure "1.8.0"]
-    [com.lambdazen.bitsy/bitsy "3.0.2"]
-    [com.orientechnologies/orientdb-client "2.2.33"]
-    [com.orientechnologies/orientdb-core "2.2.33"]
-    [com.orientechnologies/orientdb-graphdb "2.2.33"]
-    [com.taoensso/carmine "2.18.0"]
-    [com.tinkerpop.blueprints/blueprints-core "2.6.0"]
     [hexagram30/common "0.1.0-SNAPSHOT"]
-    [org.clojure/clojure "1.8.0"]
-    [org.clojure/data.xml "0.0.8"]]
+    [org.clojure/clojure "1.8.0"]]
   :profiles {
     :ubercompile {
       :aot :all}
@@ -58,12 +49,52 @@
         [lein-kibit "0.1.6"]
         [venantius/yagni "0.1.4"]]}
     :test {
-      :plugins [[lein-ltest "0.3.0"]]}
-      :server {
-        :jvm-opts ["-XX:MaxDirectMemorySize=512g"]
-        :main hxgm30.graphdb.server}}
+      :plugins [
+        [lein-ltest "0.3.0"]]}
+    :server {
+      :jvm-opts ["-XX:MaxDirectMemorySize=512g"]
+      :main hxgm30.graphdb.server}
+    :bitsy-plugin {
+      :source-paths ["plugins/bitsy"]
+      :dependencies [
+        [com.lambdazen.bitsy/bitsy "3.0.2"]]}
+    :orientdb-plugin {
+      :jvm-opts ["-Dgraph.backend=orientdb"]
+      :source-paths ["plugins/orientdb"]
+      :dependencies [
+        [clojurewerkz/ogre "3.3.1.0"]
+        [com.orientechnologies/orientdb-client "2.2.33"]
+        [com.orientechnologies/orientdb-core "2.2.33"]
+        [com.orientechnologies/orientdb-graphdb "2.2.33"]
+        [com.tinkerpop.blueprints/blueprints-core "2.6.0"]]
+      :aliases {
+        "start-db" ["shell"
+          "docker-compose"
+            "-f" "resources/docker/docker-compose-orientdb.yml"
+            "up"]
+        "stop-db" ["shell"
+          "docker-compose"
+            "-f" "resources/docker/docker-compose-orientdb.yml"
+            "down"]}}
+    :redis-plugin {
+      :jvm-opts ["-Dgraph.backend=redis"]
+      :source-paths ["plugins/redis"]
+      :dependencies [
+        [com.taoensso/carmine "2.18.0"]]
+      :aliases {
+        "start-db" ["shell"
+          "docker-compose"
+            "-f" "resources/docker/docker-compose-redis.yml"
+            "up"]
+        "stop-db" ["shell"
+          "docker-compose"
+            "-f" "resources/docker/docker-compose-redis.yml"
+            "down"]}}}
   :aliases {
     ;; Dev Aliases
+    "repl" ["do"
+      ["clean"]
+      ["repl"]]
     "ubercompile" ["do"
       ["clean"]
       ["with-profile" "+ubercompile" "compile"]]
@@ -80,12 +111,4 @@
       ["kibit"]
       ;["eastwood"]
       ]
-    "ltest" ["with-profile" "+test" "ltest"]
-    ;; Docker OrientDB graph database server
-    "orientdb" ["shell"
-      "docker-compose" "-f" "resources/docker/docker-compose-orientdb.yml" "up"]
-    ;; Docker Redis with graph database support
-    "start-redis" ["shell"
-      "docker-compose" "-f" "resources/docker/docker-compose.yml" "up"]
-    "stop-redis" ["shell"
-      "docker-compose" "-f" "resources/docker/docker-compose.yml" "down"]})
+    "ltest" ["with-profile" "+test" "ltest"]})

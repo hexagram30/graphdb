@@ -1,4 +1,4 @@
-(ns hxgm30.graphdb.api.impl.bitsy.factory
+(ns hxgm30.graphdb.plugin.bitsy.api.factory
   (:require
     [clojure.java.io :as io])
   (:import
@@ -6,6 +6,8 @@
     (com.lambdazen.bitsy.wrapper BitsyAutoReloadingGraph)
     (java.net URI)
     (java.nio.file Paths)))
+
+(load "/hxgm30/graphdb/plugin/protocols/factory")
 
 (defn- create-data-dir!
   [file]
@@ -28,23 +30,27 @@
   file
   fs-path])
 
-(defn connect
+(defn- -connect
   ([this]
-    (connect this {}))
+    (-connect this {}))
   ([this opts]
     (let [g (new BitsyGraph (:fs-path this))]
       (if (true? (:autoreload? opts))
         (new BitsyAutoReloadingGraph g)
         g))))
 
-(defn destroy
+(defn- -destroy
   [this]
   ;; No-op
   )
 
 (def behaviour
-  {:connect connect
-   :destroy destroy})
+  {:connect -connect
+   :destroy -destroy})
+
+(extend BitsyGraphFactory
+        DBFactoryAPI
+        behaviour)
 
 (defn create
   [spec]

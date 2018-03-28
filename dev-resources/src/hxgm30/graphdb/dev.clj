@@ -1,22 +1,20 @@
 (ns hxgm30.graphdb.dev
   (:require
-    [clojure.data.xml :as xml]
     [clojure.java.io :as io]
     [clojure.pprint :refer [pprint]]
     [clojure.tools.namespace.repl :as repl]
-    [clojurewerkz.ogre.core :as ogre]
+    ;[clojurewerkz.ogre.core :as ogre]
     [clojusc.dev.system.core :as system-api]
     [clojusc.twig :as logger]
     [com.stuartsierra.component :as component]
-    [hxgm30.graphdb.api.db :as db]
-    [hxgm30.graphdb.api.factory :as factory]
     [hxgm30.graphdb.components.config :as config]
     [hxgm30.graphdb.components.core]
-    [hxgm30.graphdb.components.redis :as redis]
-    [taoensso.carmine :as car]
+    [hxgm30.graphdb.plugin.backend :as backend]
+    [hxgm30.graphdb.plugin.util :as plugin-util]
+    [hxgm30.graphdb.util :as util]
     [trifl.java :refer [show-methods]])
   (:import
-    (com.lambdazen.bitsy BitsyGraph)
+    ;(com.lambdazen.bitsy BitsyGraph)
     (java.net URI)
     (java.nio.file Paths)))
 
@@ -82,39 +80,20 @@
 (def refresh #'repl/refresh)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;   Test Specs   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(def orientdb-spec
-  {:protocol "remote"
-   :path "localhost/test"
-   :user "root"
-   :password "root"
-   :pool {:min-db-instances 1
-          :max-db-instances 10}})
-
-(def bitsy-spec
-  {:protocol "file"
-   :path "data/bitsy"})
-
-(def redis-spec
-  {:host "localhost"})
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Data   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn conn
-  []
-  (redis/get-conn (system)))
+; (defn conn
+;   []
+;   (redis/get-conn (system)))
 
-(defn cypher
-  [query-str]
-  (db/cypher (conn) query-str))
+; (defn cypher
+;   [query-str]
+;   (db/cypher (conn) query-str))
 
-(defn dump
-  []
-  (db/dump (conn)))
+; (defn dump
+;   []
+;   (db/dump (conn)))
 
 (comment
   (def f (factory/create :redis redis-spec))

@@ -1,4 +1,4 @@
-(ns hxgm30.graphdb.api.impl.redis.util)
+(ns hxgm30.graphdb.plugin.redis.api.util)
 
 (defn parse-node-props
   [props]

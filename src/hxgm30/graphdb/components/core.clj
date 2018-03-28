@@ -3,24 +3,28 @@
     [com.stuartsierra.component :as component]
     [hxgm30.graphdb.components.config :as config]
     [hxgm30.graphdb.components.logging :as logging]
-    [hxgm30.graphdb.components.redis :as redis]))
+    [hxgm30.graphdb.config :as cfg-lib]
+    [hxgm30.graphdb.plugin.backend :as backend]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Common Configuration Components   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def cfg
-  {:config (config/create-component)})
+(defn cfg
+  [data]
+  {:config (config/create-component data)})
 
 (def log
   {:logging (component/using
              (logging/create-component)
              [:config])})
 
-(def redis
-  {:redis (component/using
-           (redis/create-component)
-           [:config :logging])})
+(defn backend
+  [data]
+  (let [backend (get-in data [:backend :plugin])]
+    {:backend (component/using
+               (backend/create-component backend)
+               (backend/get-component-deps backend))}))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Component Initializations   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -28,23 +32,25 @@
 
 (defn initialize-bare-bones
   []
-  (component/map->SystemMap
-    (merge cfg
-           log)))
+  (let [cfg-data (cfg-lib/data)]
+    (component/map->SystemMap
+      (merge (cfg cfg-data)
+             log))))
 
-(defn initialize-with-db
+(defn initialize-with-backend
   []
-  (component/map->SystemMap
-    (merge cfg
-           log
-           redis)))
+  (let [cfg-data (cfg-lib/data)]
+    (component/map->SystemMap
+      (merge (cfg cfg-data)
+             log
+             (backend cfg-data)))))
 
 (def init-lookup
   {:basic #'initialize-bare-bones
-   :db #'initialize-with-db})
+   :backend #'initialize-with-backend})
 
 (defn init
   ([]
-    (init :db))
+    (init :backend))
   ([mode]
     ((mode init-lookup))))
