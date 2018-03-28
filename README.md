@@ -7,11 +7,25 @@
 
 ## Usage
 
-Standalone:
+This project utilizes a plugin scheme to limit the number of dependencies
+brought in for any given supported backend. This data is stored in a
+project profile for each supported backend. For profiles that require an
+external database, aliases for staring and stopping the databases are also
+provided in the profile.
 
+To start the database:
 ```
-$ lein start-redis
+$ lein with-profile +redis-plugin start-db
 ```
+
+To start the REPL:
+```
+$ lein with-profile +redis-plugin repl
+```
+
+Then call `(startup)` and `(shutdown)` to manage the associated components,
+connecting to the database indicated in the plugin.
+
 
 For use as part of a component-based system, see
 [hxgm30.mush.components.database][comp-graphdb].
