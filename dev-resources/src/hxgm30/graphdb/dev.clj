@@ -10,6 +10,7 @@
     [hxgm30.graphdb.components.config :as config]
     [hxgm30.graphdb.components.core]
     [hxgm30.graphdb.plugin.backend :as backend]
+    [hxgm30.graphdb.plugin.util :as plugin-util]
     [hxgm30.graphdb.util :as util]
     [trifl.java :refer [show-methods]])
   (:import

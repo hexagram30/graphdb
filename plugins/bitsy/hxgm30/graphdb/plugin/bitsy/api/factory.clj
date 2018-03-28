@@ -7,6 +7,8 @@
     (java.net URI)
     (java.nio.file Paths)))
 
+(load "/hxgm30/graphdb/plugin/protocols/factory")
+
 (defn- create-data-dir!
   [file]
   (when-not (.exists file)
@@ -45,8 +47,6 @@
 (def behaviour
   {:connect -connect
    :destroy -destroy})
-
-(load "/hxgm30/graphdb/api/protocols/factory")
 
 (extend BitsyGraphFactory
         DBFactoryAPI

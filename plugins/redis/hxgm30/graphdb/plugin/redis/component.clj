@@ -34,8 +34,8 @@
 
 (defn get-spec
   [system]
-  {:host (redis-host this)
-   :port (redis-port this)})
+  {:host (redis-host system)
+   :port (redis-port system)})
 
 (defn get-conn
   [system]

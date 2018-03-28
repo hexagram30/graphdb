@@ -59,6 +59,7 @@
       :dependencies [
         [com.lambdazen.bitsy/bitsy "3.0.2"]]}
     :orientdb-plugin {
+      :jvm-opts ["-Dgraph.backend=orientdb"]
       :source-paths ["plugins/orientdb"]
       :dependencies [
         [clojurewerkz/ogre "3.3.1.0"]
@@ -75,13 +76,11 @@
           "docker-compose"
             "-f" "resources/docker/docker-compose-orientdb.yml"
             "down"]}}
-    :redisgraph-plugin {
+    :redis-plugin {
+      :jvm-opts ["-Dgraph.backend=redis"]
       :source-paths ["plugins/redis"]
       :dependencies [
         [com.taoensso/carmine "2.18.0"]]
-      :aot [hxgm30.graphdb.plugin.redis.api.db
-            hxgm30.graphdb.plugin.redis.api.factory
-            hxgm30.graphdb.plugin.redis.component]
       :aliases {
         "start-db" ["shell"
           "docker-compose"

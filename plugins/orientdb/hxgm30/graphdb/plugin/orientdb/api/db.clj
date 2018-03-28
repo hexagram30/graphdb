@@ -1,4 +1,4 @@
-(ns hxgrm30.graphdb.plugin.orientdb.api.db
+(ns hxgm30.graphdb.plugin.orientdb.api.db
   "This is the implementation that's intended to be used with OrientDB v 2.2.x.
 
   Resources for this implementation:
@@ -10,18 +10,72 @@
     [hxgm30.graphdb.util :as util])
   (:import
     (com.tinkerpop.blueprints.impls.orient OrientGraph
-                                           OrientGraphNoTx)))
+                                           OrientGraphNoTx))
+  (:refer-clojure :exclude [flush]))
 
-(load "/hxgm30/graphdb/api/impl/tinkerpop2/db")
+(load "/hxgm30/graphdb/plugin/protocols/db")
 
-(def behaviour tinkerpop2-behaviour)
+(defn- -add-edge
+  [this src dst label]
+  (.addEdge this nil src dst label))
 
-(load "/hxgm30/graphdb/api/protocols/db")
+(defn- -add-vertex
+  [this props]
+  (.addVertex this (util/keys->strs props)))
+
+(defn- -commit
+  [this]
+  (.commit this))
+
+(defn- -disconnect
+  [this]
+  (.shutdown this))
+
+(defn- -get-edge
+  [this id]
+  (.getEdge this id))
+
+(defn- -get-edges
+  [this]
+  (into [] (.getEdges this)))
+
+(defn- -get-vertex
+  [this id]
+  (.getVertex this id))
+
+(defn- -get-vertices
+  [this]
+  (into [] (.getVertices this)))
+
+(defn- -remove-edge
+  [this edge]
+  (.removeEdge this edge))
+
+(defn- -remove-vertex
+  [this vertex]
+  (.removeVertex this vertex))
+
+(defn- -rollback
+  [this]
+  (.rollback this))
+
+(def behaviour
+  {:add-edge -add-edge
+   :add-vertex -add-vertex
+   :commit -commit
+   :disconnect -disconnect
+   :get-edge -get-edge
+   :get-edges -get-edges
+   :get-vertex -get-vertex
+   :get-vertices -get-vertices
+   :remove-edge -remove-edge
+   :remove-vertex -remove-vertex
+   :rollback -rollback})
 
 (extend OrientGraph
         GraphDBAPI
-        tinkerpop2/behaviour)
+        behaviour)
 
 (extend OrientGraphNoTx
         GraphDBAPI
-        tinkerpop2/behaviour)
+        behaviour)

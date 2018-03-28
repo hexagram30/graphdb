@@ -4,6 +4,8 @@
   (:import
     (clojure.lang Keyword)))
 
+(load "/hxgm30/graphdb/plugin/protocols/factory")
+
 (defrecord RedisGraphFactory [
   spec
   pool
@@ -23,8 +25,6 @@
 (def behaviour
   {:connect -connect
    :destroy -destroy})
-
-(load "/hxgm30/graphdb/api/protocols/factory")
 
 (extend RedisGraphFactory
         DBFactoryAPI

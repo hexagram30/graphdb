@@ -1,4 +1,4 @@
-(ns hxgm30.graphdb.api.impl.orientdb.factory
+(ns hxgm30.graphdb.plugin.orientdb.api.factory
   "This is the implementation that's intended to be used with OrientDB v 2.2.x.
 
   Resources for this implementation:
@@ -10,6 +10,8 @@
   (:import
     (com.tinkerpop.blueprints.impls.orient OrientGraphFactory))
   (:refer-clojure :exclude [flush]))
+
+(load "/hxgm30/graphdb/plugin/protocols/factory")
 
 (defn- -connect
   ([this]
@@ -26,8 +28,6 @@
 (def behaviour
   {:connect -connect
    :destroy -destroy})
-
-(load "/hxgm30/graphdb/api/protocols/factory")
 
 (extend OrientGraphFactory
         DBFactoryAPI

@@ -8,7 +8,7 @@
 ;;;   Utility Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn- get-cfg
+(defn get-cfg
   [system]
   (get-in system [:config :data]))
 
@@ -33,10 +33,9 @@
 (defn start
   [this]
   (log/info "Starting config component ...")
-  (log/debug "Started config component.")
-  (let [cfg (config/data)]
-    (log/trace "Built configuration:" cfg)
-    (assoc this :data cfg)))
+    (log/trace "Using configuration:" (:data this))
+    (log/debug "Started config component.")
+    this)
 
 (defn stop
   [this]

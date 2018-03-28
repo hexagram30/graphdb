@@ -7,6 +7,8 @@
     [taoensso.timbre :as log])
   (:refer-clojure :exclude [flush]))
 
+(load "/hxgm30/graphdb/plugin/protocols/db")
+
 (defrecord RedisGraph [
   spec
   pool
@@ -122,8 +124,6 @@
    :remove-vertex -remove-vertex
    :rollback -rollback
    :show-features -show-features})
-
-(load "/hxgm30/graphdb/api/protocols/db")
 
 (extend RedisGraph
         GraphDBAPI
