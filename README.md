@@ -34,6 +34,7 @@ files nested under the `plugins` directory.
 ## Resources
 
 * https://github.com/lambdazen/bitsy
+* http://janusgraph.org
 * https://orientdb.com/docs/last/index.html
 * http://redisgraph.io/commands/
 
