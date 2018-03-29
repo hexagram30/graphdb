@@ -7,7 +7,10 @@
    :bitsy {
      :protocol "file"
      :path "data/bitsy"}
-   :janus {}
+   :janusgraph {
+     :storage {
+       :backend "berkeleyje"
+       :directory "data/janus"}}
    :orientdb {
      :protocol "remote"
      :path "localhost/test"

@@ -22,12 +22,15 @@
     :url "http://www.apache.org/licenses/LICENSE-2.0"}
   :dependencies [
     [clojusc/dev-system "0.1.0"]
+    [clojusc/twig "0.3.2"]
     [hexagram30/common "0.1.0-SNAPSHOT"]
     [org.clojure/clojure "1.8.0"]]
   :profiles {
     :ubercompile {
       :aot :all}
     :dev {
+      :exclusions [
+        org.clojure/tools.namespace]
       :dependencies [
         [clojusc/trifl "0.2.0"]
         [org.clojure/tools.namespace "0.2.11"]]
@@ -40,6 +43,10 @@
         :prompt ~get-prompt
         :init ~(println (get-banner))}}
     :lint {
+      :exclusions [
+        org.clojure/tools.namespace]
+      :dependencies [
+        [org.clojure/tools.namespace "0.2.11"]]
       :source-paths ^:replace ["src"]
       :test-paths ^:replace []
       :plugins [
@@ -58,6 +65,15 @@
       :source-paths ["plugins/bitsy"]
       :dependencies [
         [com.lambdazen.bitsy/bitsy "3.0.2"]]}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;   Plugins   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :janusgraph-plugin {
+      :jvm-opts ["-Dgraph.backend=janusgraph"]
+      :source-paths ["plugins/janusgraph"]
+      :dependencies [
+        [org.apache.tinkerpop/gremlin-server "3.2.7"]
+        [org.janusgraph/janusgraph-berkeleyje "0.2.0"]]}
     :orientdb-plugin {
       :jvm-opts ["-Dgraph.backend=orientdb"]
       :source-paths ["plugins/orientdb"]

@@ -1,3 +1,5 @@
 (defprotocol DBFactoryAPI
   (connect [this] [this opts])
-  (destroy [this]))
+  (dbs [this])
+  (destroy [this])
+  (drop [this db]))

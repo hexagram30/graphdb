@@ -3,7 +3,6 @@
     [clojure.java.io :as io]
     [clojure.pprint :refer [pprint]]
     [clojure.tools.namespace.repl :as repl]
-    ;[clojurewerkz.ogre.core :as ogre]
     [clojusc.dev.system.core :as system-api]
     [clojusc.twig :as logger]
     [com.stuartsierra.component :as component]
@@ -14,7 +13,6 @@
     [hxgm30.graphdb.util :as util]
     [trifl.java :refer [show-methods]])
   (:import
-    ;(com.lambdazen.bitsy BitsyGraph)
     (java.net URI)
     (java.nio.file Paths)))
 
@@ -22,7 +20,7 @@
 ;;;   Initial Setup & Utility Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(logger/set-level! '[hxgm30] :info)
+(logger/set-level! '[hxgm30] :debug)
 
 (def ^:dynamic *mgr* nil)
 
@@ -80,22 +78,47 @@
 (def refresh #'repl/refresh)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Data Support   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn backend
+  []
+  (config/backend-plugin (system)))
+
+(defn conn
+  []
+  (backend/get-conn (backend) (system)))
+
+(defn factory
+  []
+  (backend/get-factory (backend) (system)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Data   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; (defn conn
-;   []
-;   (redis/get-conn (system)))
+(defmacro defn-factory
+  [wrapper-name & rest]
+  `(defn ~wrapper-name
+    [~@rest]
+    (backend/factory-call (backend) (system) '~wrapper-name)))
 
-; (defn cypher
-;   [query-str]
-;   (db/cypher (conn) query-str))
+(defn-factory dbs)
 
-; (defn dump
-;   []
-;   (db/dump (conn)))
+(defmacro defn-db
+  [wrapper-name & rest]
+  `(defn ~wrapper-name
+    [~@rest]
+    (backend/db-call (backend) (system) '~wrapper-name)))
+
+(defn-db configuration)
+(defn-db features)
+(defn-db graph-name)
+(defn-db open?)
+(defn-db closed?)
 
 (comment
+  (startup)
   (def f (factory/create :redis redis-spec))
   (def g (factory/connect f :game))
   ;; If you haven't created any vertices:
@@ -117,56 +140,3 @@
   (db/disconnect g)
   (factory/destroy f))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;   Bitsy   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(comment
-  (def f (factory/create :bitsy bitsy-spec))
-  (def g (factory/connect f))
-  ;; If you haven't created any vertices:
-  (def cave (db/add-vertex g {:type :room :name "A cave" :description "You are in a dark cave."}))
-  (def tunnel (db/add-vertex g {:type :room
-                                :name "A tunnel"
-                                :description "You are in a long, dark tunnel."}))
-  (db/commit g)
-  ;; If you have created the vertices:
-
-  ;; If you haven't created any edges:
-  (def cave->tunnel (db/add-edge g cave, tunnel "has exit"))
-  (def tunnel->cave (db/add-edge g tunnel, cave "has exit"))
-  (db/commit g)
-  ;; If you have created the edges:
-
-  ;; Now visit http://localhost:2480, login, and then take a look at the
-  ;; vertices and edges ...
-  (db/disconnect g)
-  (factory/destroy f))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;   OrientDB   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(comment
-  (def f (factory/create :orientdb orientdb-spec))
-  (def g (factory/connect f))
-  ;; If you haven't created any vertices:
-  (def cave (db/add-vertex g {:type :room
-                              :name "A cave"
-                              :description "You are in a dark cave."}))
-  (def tunnel (db/add-vertex g {:type :room
-                                :name "A tunnel"
-                                :description "You are in a long, dark tunnel."}))
-  (db/commit g)
-  ;; If you have created the vertices:
-
-  ;; If you haven't created any edges:
-  (def cave->tunnel (db/add-edge g cave, tunnel "has exit"))
-  (def tunnel->cave (db/add-edge g tunnel, cave "has exit"))
-  (db/commit g)
-  ;; If you have created the edges:
-
-  ;; Now visit http://localhost:2480, login, and then take a look at the
-  ;; vertices and edges ...
-  (db/disconnect g)
-  (factory/destroy f))
