@@ -1,11 +1,10 @@
 version: '3'
 services:
   redis-graph:
-    image: redis:4.0.9-alpine
+    image: hexagram30/redis-graph:4.0.8
     ports:
       - "6379:6379"
     volumes:
-      - ${PWD}/data/redis:/data
+      - ${PWD}/data/redisgraph:/data
     user: "${UID}:${GID}"
     tty: true
-    command: ["redis-server", "--appendonly", "yes"]

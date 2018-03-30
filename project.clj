@@ -106,6 +106,20 @@
           "docker-compose"
             "-f" "resources/docker/docker-compose-redis.yml"
             "down"]}}}
+    :redisgraph-plugin {
+      :jvm-opts ["-Dgraph.backend=redisgraph"]
+      :source-paths ["plugins/redisgraph"]
+      :dependencies [
+        [com.taoensso/carmine "2.18.0"]]
+      :aliases {
+        "start-db" ["shell"
+          "docker-compose"
+            "-f" "resources/docker/docker-compose-redis-graph.yml"
+            "up"]
+        "stop-db" ["shell"
+          "docker-compose"
+            "-f" "resources/docker/docker-compose-redis-graph.yml"
+            "down"]}}}
   :aliases {
     ;; Dev Aliases
     "repl" ["do"
