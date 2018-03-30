@@ -20,7 +20,7 @@
 ;;;   Initial Setup & Utility Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(logger/set-level! '[hxgm30] :debug)
+(logger/set-level! '[hxgm30] :info)
 
 (def ^:dynamic *mgr* nil)
 
@@ -107,15 +107,29 @@
 
 (defmacro defn-db
   [wrapper-name & rest]
+  (let [args? (and (coll? rest)
+                   (seq rest))]
   `(defn ~wrapper-name
     [~@rest]
-    (backend/db-call (backend) (system) '~wrapper-name)))
+    ~(if args?
+      `(backend/db-call (backend) (system) '~wrapper-name ~@rest)
+      `(backend/db-call (backend) (system) '~wrapper-name)))))
 
+(defn-db add-vertex label)
+(defn-db closed?)
+(defn-db commit)
 (defn-db configuration)
+(defn-db edges)
 (defn-db features)
 (defn-db graph-name)
 (defn-db open?)
-(defn-db closed?)
+(defn-db variables)
+
+(defn vertices
+  ([]
+    (backend/db-call (backend) (system) 'vertices))
+  ([ids]
+    (backend/db-call (backend) (system) 'vertices ids)))
 
 (comment
   (startup)

@@ -45,8 +45,8 @@
     (let [builder (JanusGraphFactory/build)]
       (log/trace "Builder:" builder)
       (log/debug "Configuring builder with:" opts)
-      (.set builder "gremlin.graph" "org.janusgraph.core.JanusGraphFactory")
-      ;(.set builder "graph.graphname" "JanusConfigurationGraph")
+      ;(.set builder "gremlin.graph" "org.janusgraph.core.JanusGraphFactory")
+      ;(.set builder "graph.graphname" "game")
       (.set builder "storage.backend" (:storage-backend opts))
       (.set builder "storage.directory" (:storage-directory opts))
       (.open builder))))
