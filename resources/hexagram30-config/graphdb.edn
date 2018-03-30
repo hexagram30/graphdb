@@ -1,7 +1,12 @@
 {:user {:password-file "~/.hexagram30/graphdb.edn"}
  :logging {
-   :nss [com.orientechnologies hxgm30]
-   :level :debug}
+   :nss [
+     com.lambdazen.bitsy
+     com.orientechnologies
+     hxgm30
+     org.janusgraph
+     taoensso.carmine]
+   :level :info}
  :backend {
    :plugin :redis
    :bitsy {
