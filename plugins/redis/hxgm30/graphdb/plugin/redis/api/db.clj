@@ -25,36 +25,37 @@
     "OK" :ok
     results))
 
-(defn- call
-  [this & args]
-  (log/trace "Making call to Redis:" args)
-  (log/debugf "Native format: %s %s"
-              (string/upper-case (name (first args)))
-              (string/join " " (rest args)))
+(defn- prepare
+  [args]
+  (log/debug "Got args:" args)
+  (apply redis/redis-call args))
+
+(defn- pipeline
+  [this & cmds]
+  (log/debug "Making call(s) to Redis:" cmds)
   (-> this
       (select-keys [:spec :pool])
-      (redis/wcar (redis/redis-call args))
+      (redis/wcar (doall (mapcat prepare cmds)))
       (parse-results)))
 
-(defn- create-edge
-  ([this]
-    (create-edge this {nil nil}))
-  ([this attrs]
-    (create-edge this nil attrs))
-  ([this label attrs]
-    (let [id (schema/edge (uuid4))
-          normed-attrs (merge attrs (when label {:label label}))
-          flat-attrs (mapcat vec normed-attrs)
-          result (apply call (concat [this :hmset id] flat-attrs))]
-      {:id id
-       :result result})))
+(defn- call
+  [this & args]
+  (pipeline this [args]))
 
-(defn- create-relation
-  [this src-id dst-id edge-id]
-  (let [id (schema/relation src-id)
-        result (call this :rpush id dst-id)]
-    {:id id
-     :result result}))
+(defn- create-edge-cmd
+  ([id]
+    (create-edge-cmd id {nil nil}))
+  ([id attrs]
+    (create-edge-cmd id nil attrs))
+  ([id label attrs]
+    (let [normed-attrs (merge attrs (when label {:label label}))
+          flat-attrs (mapcat vec normed-attrs)]
+      (concat [:hmset id] flat-attrs))))
+
+(defn- create-relation-cmd
+  [src-id dst-id edge-id]
+  (let [id (schema/relation src-id)]
+    [:rpush id dst-id]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   API Implementation   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -72,14 +73,15 @@
   ([this src-id dst-id attrs]
     (-add-edge this src-id dst-id nil attrs))
   ([this src-id dst-id label attrs]
-    (let [multi-result (call this :multi)
-          edge-result (create-edge this label attrs)
-          relation-result (create-relation this src-id dst-id (:id edge-result))
-          exec-result (call this :exec)]
-      {:multi multi-result
-       :edge edge-result
-       :relation relation-result
-       :exec exec-result})))
+    (let [edge-id (schema/edge (uuid4))
+          result (pipeline
+                   this
+                   [:multi]
+                   (create-edge-cmd edge-id label attrs)
+                   (create-relation-cmd src-id dst-id edge-id)
+                   [:exec])]
+      {:id edge-id
+       :result result})))
 
 (defn- -add-vertex
   ([this]
