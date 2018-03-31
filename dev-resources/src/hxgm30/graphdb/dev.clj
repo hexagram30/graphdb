@@ -49,6 +49,10 @@
 ;;;   Data Support   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn status
+  []
+  (system-api/get-status (:state (mgr-arg))))
+
 (defn system
   []
   (system-api/get-system (:state (mgr-arg))))
@@ -80,7 +84,8 @@
   (alter-var-root #'*mgr* (constantly (system-api/create-state-manager)))
   (system-api/set-system-ns (:state *mgr*) "hxgm30.graphdb.components.core")
   (system-api/startup *mgr*)
-  (load-backend-specific-dev))
+  (load-backend-specific-dev)
+  (status))
 
 (defn shutdown
   []
@@ -122,23 +127,33 @@
       `(backend/db-call (backend) (system) '~wrapper-name ~@rest)
       `(backend/db-call (backend) (system) '~wrapper-name)))))
 
+(defmacro db-call
+  [func & rest]
+  (let [args? (and (coll? rest)
+                   (seq rest))]
+  (if args?
+    `(backend/db-call (backend) (system) '~func ~@rest)
+    `(backend/db-call (backend) (system) '~func))))
+
 (defn add-edge
   ([src dst]
-    (backend/db-call (backend) (system) 'add-edge src dst))
+    (db-call add-edge src dst))
   ([src dst attrs]
-    (backend/db-call (backend) (system) 'add-edge src dst attrs))
+    (db-call add-edge src dst attrs))
   ([src dst attrs label attrs]
-    (backend/db-call (backend) (system) 'add-edge src dst attrs label attrs)))
+    (db-call add-edge src dst attrs label attrs)))
 
 (defn add-vertex
   ([]
-    (backend/db-call (backend) (system) 'add-vertex))
+    (db-call add-vertex))
   ([attrs]
-    (backend/db-call (backend) (system) 'add-vertex attrs)))
+    (db-call add-vertex attrs)))
 
+(defn-db backup)
 (defn-db closed?)
 (defn-db commit)
 (defn-db configuration)
+(defn-db dump)
 (defn-db edges)
 (defn-db features)
 (defn-db get-edge id)
@@ -158,9 +173,9 @@
 
 (defn vertices
   ([]
-    (backend/db-call (backend) (system) 'vertices))
+    (db-call vertices))
   ([ids]
-    (backend/db-call (backend) (system) 'vertices ids)))
+    (db-call vertices ids)))
 
 (comment
 

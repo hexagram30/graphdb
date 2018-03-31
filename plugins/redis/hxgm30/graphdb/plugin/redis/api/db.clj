@@ -8,10 +8,13 @@
     [clojure.string :as string]
     [hxgm30.graphdb.plugin.redis.api.queries :as queries]
     [hxgm30.graphdb.plugin.redis.api.schema :as schema]
+    [hxgm30.graphdb.util :as util]
     [taoensso.carmine :as redis]
     [taoensso.timbre :as log]
     [trifl.java :refer [uuid4]])
   (:refer-clojure :exclude [flush]))
+
+(declare create-index)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Support Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -27,8 +30,16 @@
 
 (defn- prepare
   [args]
-  (log/debug "Got args:" args)
+  (log/trace "Got args:" args)
   (apply redis/redis-call args))
+
+(defn- cmd
+  [this lib-cmd & args]
+  (log/debug "Making carmine call to Redis:" lib-cmd)
+  (-> this
+      (select-keys [:spec :pool])
+      (redis/wcar (apply lib-cmd args))
+      (parse-results)))
 
 (defn- pipeline
   [this & cmds]
@@ -41,6 +52,26 @@
 (defn- call
   [this & args]
   (pipeline this [args]))
+
+(defn- call-with-cursor
+  [this cursor-func cursor]
+  (loop [[next-cursor results] (cursor-func cursor)
+         acc []]
+    (if (= "0" next-cursor)
+      (concat acc results)
+      (recur (cursor-func next-cursor) results))))
+
+(defn- get-attrs
+  ([this id]
+    (get-attrs this id 0))
+  ([this id cursor]
+    (let [results (call-with-cursor
+                   this
+                   (fn [cursor] (call this :hscan id cursor))
+                   cursor)]
+      (if (util/tuple? results)
+        (util/tuple->map results)
+        (util/tuples->map results)))))
 
 (defn find-keys
   [this pattern]
@@ -65,7 +96,7 @@
 
 (defn- create-relation-cmd
   [src-id dst-id edge-id]
-  (let [id (schema/relation src-id)]
+  (let [id (create-index :relation src-id)]
     [:rpush id dst-id]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -84,7 +115,7 @@
   ([this src-id dst-id attrs]
     (-add-edge this src-id dst-id nil attrs))
   ([this src-id dst-id label attrs]
-    (let [edge-id (schema/edge (uuid4))
+    (let [edge-id (create-index this :edge)
           result (pipeline
                    this
                    [:multi]
@@ -98,7 +129,7 @@
   ([this]
     (-add-vertex this {nil nil}))
   ([this attrs]
-    (let [id (schema/vertex (uuid4))
+    (let [id (create-index this :vertex)
           flat-attrs (mapcat vec attrs)
           result (apply call (concat [this :hmset id] flat-attrs))]
       {:id id
@@ -110,7 +141,8 @@
 
 (defn- -backup
   [this]
-  (call this :bgrewriteaof))
+  (log/infof "%s ..." (call this :bgrewriteaof))
+  :ok)
 
 (defn- -commit
   [this]
@@ -120,13 +152,23 @@
   [this]
   )
 
+(defn- -create-index
+  ([this data-type]
+    (-create-index this data-type (uuid4)))
+  ([this data-type id]
+    (case data-type
+      :edge (schema/edge id)
+      :relation (schema/relation id)
+      :vertex (schema/vertex id))))
+
 (defn- -disconnect
   [this]
   )
 
 (defn- -dump
   [this]
-  (call this :bgsave))
+  (log/infof "%s ..." (call this :bgsave))
+  :ok)
 
 (defn- -explain
   [this query-str]
@@ -138,32 +180,35 @@
 
 (defn- -get-edge
   [this id]
-  )
+  (call this :hscan id 0))
 
 (defn- -get-edges
   [this]
-  (find-keys this (schema/edge "*")))
+  (find-keys this (create-index this :edge "*")))
 
 (defn- -get-relations
   [this]
-  (find-keys this (schema/relation "*")))
+  (find-keys this (create-index this :relation "*")))
 
 (defn- -get-vertex
-  [this id]
-  )
+  ([this id]
+    (-get-vertex this id 0))
+  ([this id cursor]
+    {:id id
+     :attrs (get-attrs this id cursor)}))
 
 (defn- -get-vertex-relations
   [this id]
-  (call this :lrange (schema/relation id) 0 -1))
+  (call this :lrange (create-index this :relation id) 0 -1))
 
 (defn- -get-vertices
   [this]
-  (find-keys this (schema/vertex "*")))
+  (find-keys this (create-index this :vertex "*")))
 
 (defn- -get-vertices-relations
   [this ids]
   (->> ids
-       (map (fn [x] [:lrange (schema/relation x) 0 -1]))
+       (map (fn [x] [:lrange (create-index this :relation x) 0 -1]))
        (pipeline this)
        vec))
 
@@ -184,8 +229,12 @@
   )
 
 (defn- -vertices
-  [this]
-  )
+  ([this]
+    (-vertices this (get-vertices this)))
+  ([this ids]
+    (->> ids
+         (map (partial get-vertex this))
+         vec)))
 
 (def behaviour
   {:add-edge -add-edge
@@ -193,7 +242,9 @@
    :backup -backup
    :commit -commit
    :configuration -configuration
+   :create-index -create-index
    :disconnect -disconnect
+   :dump -dump
    :explain -explain
    :flush -flush
    :get-edge -get-edge
@@ -216,6 +267,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Non-API Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn drop-data
+  [this]
+  (call this :flushdb))
 
 (defn latency-setup
   ([this]

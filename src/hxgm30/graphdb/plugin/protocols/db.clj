@@ -5,6 +5,7 @@
   (closed? [this])
   (commit [this])
   (configuration [this])
+  (create-index [this data-type] [this data-type id])
   (cypher [this query-str])
   (disconnect [this])
   (dump [this])

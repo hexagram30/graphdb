@@ -9,6 +9,19 @@
     ;; only apply to maps
     (walk/postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) m)))
 
+(defn tuple?
+  [data]
+  (and (= 2 (count data))
+       (not (coll? (first data)))))
+
+(defn tuple->map
+  [tuple]
+  (into {} [(vec tuple)]))
+
+(defn tuples->map
+  [tuples]
+  (into {} (vec (map vec tuples))))
+
 (defn import-class
   [package-and-class]
   (try (.importClass
