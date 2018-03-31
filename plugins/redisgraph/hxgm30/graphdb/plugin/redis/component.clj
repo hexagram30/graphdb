@@ -4,7 +4,9 @@
     [hxgm30.graphdb.plugin.redisgraph.api.db :as db]
     [hxgm30.graphdb.plugin.redisgraph.api.factory :as factory]
     [com.stuartsierra.component :as component]
-    [taoensso.timbre :as log]))
+    [taoensso.timbre :as log])
+  (:import
+    (clojure.lang Symbol)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Component Dependencies   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -40,6 +42,22 @@
 (defn get-conn
   [system]
   (get-in system [:backend :conn]))
+
+(defn get-factory
+  [system]
+  (get-in system [:backend :factory]))
+
+(defn db-call
+  [system ^Symbol func args]
+  (apply
+    (ns-resolve 'hxgm30.graphdb.plugin.redisgraph.api.db func)
+    (concat [(get-conn system)] args)))
+
+(defn factory-call
+  [system ^Symbol func args]
+  (apply
+    (ns-resolve 'hxgm30.graphdb.plugin.redisgraph.api.factory func)
+    (concat [(get-factory system)] args)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Component Lifecycle Implementation   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
