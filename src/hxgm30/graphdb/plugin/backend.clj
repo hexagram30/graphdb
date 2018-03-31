@@ -1,6 +1,7 @@
 (ns hxgm30.graphdb.plugin.backend
   (:require
-    [hxgm30.graphdb.plugin.util :as util])
+    [hxgm30.graphdb.plugin.util :as util]
+    [taoensso.timbre :as log])
   (:import
     (clojure.lang Keyword)))
 
@@ -26,7 +27,11 @@
 
 (defn db-call
   [^Keyword backend system func & args]
-  ((util/get-var backend :component 'db-call) system func args))
+  (let [db-call-fn (util/get-var backend :component 'db-call)]
+    (log/debugf "Using db-call %s with args %s ..."
+                db-call-fn
+                [system func args])
+    (db-call-fn system func args)))
 
 (defn factory-call
   [^Keyword backend system func & args]
