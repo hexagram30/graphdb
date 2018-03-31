@@ -26,6 +26,10 @@ $ lein with-profile +redis-plugin repl
 Then call `(startup)` and `(shutdown)` to manage the associated components,
 connecting to the database indicated in the plugin.
 
+When done, to stop the database:
+```
+$ lein with-profile +redis-plugin stop-db
+```
 
 For use as part of a component-based system, see any of the `component.clj`
 files nested under the `plugins` directory.
