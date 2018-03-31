@@ -17,15 +17,24 @@
 ;;;   Support Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn- parse-results
+  [results]
+  (log/trace "Got results:" results)
+  (log/trace "Results type:" (type results))
+  (condp = results
+    "OK" :ok
+    results))
+
 (defn- call
   [this & args]
-  (log/debug "Making call to Redis:" args)
+  (log/trace "Making call to Redis:" args)
   (log/debugf "Native format: %s %s"
               (string/upper-case (name (first args)))
               (string/join " " (rest args)))
-  (redis/wcar
-    (select-keys this [:spec :pool])
-    (redis/redis-call args)))
+  (-> this
+      (select-keys [:spec :pool])
+      (redis/wcar (redis/redis-call args))
+      (parse-results)))
 
 (defn- create-edge
   ([this]
@@ -178,6 +187,21 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Non-API Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn latency-setup
+  ([this]
+    (latency-setup this 100))
+  ([this milliseconds]
+    (call this :config :set "latency-monitor-threshold" milliseconds)))
+
+(defn latency-latest
+  [this]
+  (call this :latency :latest))
+
+(defn latency-doctor
+  [this]
+  (print (call this :latency :doctor))
+  :ok)
 
 (defn slowlog
   ([this]

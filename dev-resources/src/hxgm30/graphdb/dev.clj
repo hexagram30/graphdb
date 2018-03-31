@@ -46,40 +46,12 @@
                      "have you run (startup)?")))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;   State Management   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Data Support   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn startup
-  []
-  (alter-var-root #'*mgr* (constantly (system-api/create-state-manager)))
-  (system-api/set-system-ns (:state *mgr*) "hxgm30.graphdb.components.core")
-  (system-api/startup *mgr*))
-
-(defn shutdown
-  []
-  (when *mgr*
-    (let [result (system-api/shutdown (mgr-arg))]
-      (alter-var-root #'*mgr* (constantly nil))
-      result)))
 
 (defn system
   []
   (system-api/get-system (:state (mgr-arg))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;   Reloading Management   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn reset
-  []
-  (shutdown)
-  (repl/refresh :after 'hxgm30.graphdb.dev/startup))
-
-(def refresh #'repl/refresh)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;   Data Support   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn backend
   []
@@ -93,8 +65,43 @@
   []
   (backend/get-factory (backend) (system)))
 
+(defn load-backend-specific-dev
+  []
+  (condp = (backend)
+    :redis (load "/hxgm30/graphdb/plugin/redis/dev")
+    :skip-load))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;   Data   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   State Management   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn startup
+  []
+  (alter-var-root #'*mgr* (constantly (system-api/create-state-manager)))
+  (system-api/set-system-ns (:state *mgr*) "hxgm30.graphdb.components.core")
+  (system-api/startup *mgr*)
+  (load-backend-specific-dev))
+
+(defn shutdown
+  []
+  (when *mgr*
+    (let [result (system-api/shutdown (mgr-arg))]
+      (alter-var-root #'*mgr* (constantly nil))
+      result)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Reloading Management   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn reset
+  []
+  (shutdown)
+  (repl/refresh :after 'hxgm30.graphdb.dev/startup))
+
+(def refresh #'repl/refresh)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Data Macros and Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmacro defn-factory
@@ -136,13 +143,6 @@
 (defn-db features)
 (defn-db graph-name)
 (defn-db open?)
-
-(defn slowlog
-  ([]
-    (backend/db-call (backend) (system) 'slowlog))
-  ([count]
-    (backend/db-call (backend) (system) 'slowlog count)))
-
 (defn-db variables)
 
 (defn vertices
@@ -152,13 +152,6 @@
     (backend/db-call (backend) (system) 'vertices ids)))
 
 (comment
-  (require
-    '[loom.alg :as alg]
-    '[loom.alg-generic :as alg-generic]
-    '[loom.attr :as attr]
-    '[loom.flow :as flow]
-    '[loom.graph :as graph]
-    '[loom.io :as loom-io])
   (def g (graph/graph [1 2] [2 3] {3 [4] 5 [6 7]} 7 8 9))
   (graph/nodes g)
   (graph/edges g)
@@ -179,7 +172,7 @@
         (attr/add-attr-to-edges :label "edge from node 5" [[5 6] [5 7]])))
   (loom-io/view attr-graph)
 
-#loom.graph.BasicEditableGraph
+;#loom.graph.BasicEditableGraph
 {:adj {1 #{2} 2 #{1 3} 3 #{2 4} 4 #{3} 5 #{6 7} 6 #{5} 7 #{5}}
  :attrs {1 {:label "node 1"}
          2 {:parity "even"}
