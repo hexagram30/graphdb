@@ -136,6 +136,13 @@
 (defn-db features)
 (defn-db graph-name)
 (defn-db open?)
+
+(defn slowlog
+  ([]
+    (backend/db-call (backend) (system) 'slowlog))
+  ([count]
+    (backend/db-call (backend) (system) 'slowlog count)))
+
 (defn-db variables)
 
 (defn vertices

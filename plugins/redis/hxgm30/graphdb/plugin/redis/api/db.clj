@@ -147,8 +147,10 @@
   )
 
 (defn- -vertices
-  [this]
-  )
+  ([this]
+    (-vertices this 0))
+  ([this cursor]
+    (call this :hscan cursor)))
 
 (def behaviour
   {:add-edge -add-edge
@@ -172,3 +174,13 @@
 (extend RedisGraph
         GraphDBAPI
         behaviour)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Non-API Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn slowlog
+  ([this]
+    (call this :slowlog :get))
+  ([this count]
+    (call this :slowlog :get count)))
