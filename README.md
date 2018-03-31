@@ -26,6 +26,11 @@ $ lein with-profile +redis-plugin repl
 Then call `(startup)` and `(shutdown)` to manage the associated components,
 connecting to the database indicated in the plugin.
 
+To connect to Redis via `redis-cli` inside the running container:
+```
+$ ./resources/scripts/redis-cli
+```
+
 When done, to stop the database:
 ```
 $ lein with-profile +redis-plugin stop-db

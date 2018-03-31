@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker exec -it docker_redis-graph_1 redis-cli
