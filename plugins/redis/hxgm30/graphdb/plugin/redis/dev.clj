@@ -2,6 +2,11 @@
 ;;;   Supplemental, Backend-specific API   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn-db find-keys pattern)
+(defn-db find-edge-ids)
+(defn-db find-relation-ids)
+(defn-db find-relations vertex-id)
+(defn-db find-vertex-ids)
 (defn-db latency-doctor)
 (defn-db latency-latest)
 
@@ -28,3 +33,6 @@
   '[loom.flow :as flow]
   '[loom.graph :as graph]
   '[loom.io :as loom-io])
+
+(require
+  '[hxgm30.graphdb.plugin.redis.api.queries :as queries])

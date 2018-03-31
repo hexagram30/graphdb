@@ -190,6 +190,32 @@
 ;;;   Non-API Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn find-keys
+  [this pattern]
+  (if (= "*" pattern)
+    {:error {:type :bad-query
+             :msg "Provided pattern would result in expensive query."}}
+    (call this :keys pattern)))
+
+(defn find-edge-ids
+  [this]
+  (find-keys this (schema/edge "*")))
+
+(defn find-relation-ids
+  [this]
+  (find-keys this (schema/relation "*")))
+
+(defn find-relations
+  [this vertex-ids]
+  (->> vertex-ids
+       (map (fn [x] [:lrange (schema/relation x) 0 -1]))
+       (pipeline this)
+       vec))
+
+(defn find-vertex-ids
+  [this]
+  (find-keys this (schema/vertex "*")))
+
 (defn latency-setup
   ([this]
     (latency-setup this 100))

@@ -194,6 +194,26 @@
 (add-edge "node:66bbc110-a28b-4b97-86b3-ca97517e28ec" "node:981f100e-9ef6-4843-b898-ac95e5843794")
 (add-edge "node:981f100e-9ef6-4843-b898-ac95e5843794" "node:1293bc7d-6725-4660-9e48-7792b1184968")
 (add-edge "node:1293bc7d-6725-4660-9e48-7792b1184968" "node:66bbc110-a28b-4b97-86b3-ca97517e28ec")
+
+["adjc:node:66bbc110-a28b-4b97-86b3-ca97517e28ec"
+ "adjc:node:1293bc7d-6725-4660-9e48-7792b1184968"
+ "adjc:node:981f100e-9ef6-4843-b898-ac95e5843794"]
+
+(def vs (find-vertex-ids))
+vs
+(def rs (find-relations vs))
+rs
+(def g (queries/graph vs rs))
+g
+(loom-io/view g)
+
+(def as {"node:66bbc110-a28b-4b97-86b3-ca97517e28ec" {:label "node 1"}
+         "node:981f100e-9ef6-4843-b898-ac95e5843794" {:label "node 2"}
+         "node:1293bc7d-6725-4660-9e48-7792b1184968" {:label "node 3"}})
+(def g (queries/graph vs rs as))
+g
+(loom-io/view g)
+
 )
 
 (comment
@@ -218,4 +238,3 @@
   ;; vertices and edges ...
   (db/disconnect g)
   (factory/destroy f))
-
