@@ -141,6 +141,17 @@
 (defn-db configuration)
 (defn-db edges)
 (defn-db features)
+(defn-db get-edge id)
+(defn-db get-edges)
+(defn-db get-relations)
+(defn-db get-vertex id)
+(defn-db get-vertex-relations id)
+(defn-db get-vertices)
+(defn-db get-vertices-relations ids)
+(defn-db find-relation-ids)
+(defn-db find-relations vertex-id)
+(defn-db find-vertex-ids)
+
 (defn-db graph-name)
 (defn-db open?)
 (defn-db variables)
@@ -152,6 +163,9 @@
     (backend/db-call (backend) (system) 'vertices ids)))
 
 (comment
+
+  ;;--  Exploring the loom API  -------------------------------------------;;
+
   (def g (graph/graph [1 2] [2 3] {3 [4] 5 [6 7]} 7 8 9))
   (graph/nodes g)
   (graph/edges g)
@@ -172,49 +186,53 @@
         (attr/add-attr-to-edges :label "edge from node 5" [[5 6] [5 7]])))
   (loom-io/view attr-graph)
 
-;#loom.graph.BasicEditableGraph
-{:adj {1 #{2} 2 #{1 3} 3 #{2 4} 4 #{3} 5 #{6 7} 6 #{5} 7 #{5}}
- :attrs {1 {:label "node 1"}
-         2 {:parity "even"}
-         4 {:label "node 4" :parity "even"}
-         5 {:loom.attr/edge-attrs {6 {:label "edge from node 5"}
-                                   7 {:label "edge from node 5"}}}
-         6 {:loom.attr/edge-attrs {5 {:label "edge from node 5"}}}
-         7 {:loom.attr/edge-attrs {5 {:label "edge from node 5"}}}}
- :nodeset #{1 2 3 4 5 6 7 8 9}}
+  ;#loom.graph.BasicEditableGraph
+  {:adj {1 #{2} 2 #{1 3} 3 #{2 4} 4 #{3} 5 #{6 7} 6 #{5} 7 #{5}}
+   :attrs {1 {:label "node 1"}
+           2 {:parity "even"}
+           4 {:label "node 4" :parity "even"}
+           5 {:loom.attr/edge-attrs {6 {:label "edge from node 5"}
+                                     7 {:label "edge from node 5"}}}
+           6 {:loom.attr/edge-attrs {5 {:label "edge from node 5"}}}
+           7 {:loom.attr/edge-attrs {5 {:label "edge from node 5"}}}}
+   :nodeset #{1 2 3 4 5 6 7 8 9}}
 
-{:id "node:66bbc110-a28b-4b97-86b3-ca97517e28ec" :result "OK"}
-{:id "node:981f100e-9ef6-4843-b898-ac95e5843794" :result "OK"}
-{:id "node:1293bc7d-6725-4660-9e48-7792b1184968" :result "OK"}
+  ;;--  Exploring the new Redis backend API  ------------------------------;;
 
-{:id "edge:c3051612-dd5f-47af-b408-f332aef57222" :result "OK"}
-{:id "edge:6fbf5415-0d2d-4fba-a22e-b77e250e22ec" :result "OK"}
-{:id "edge:8426fea9-5385-4235-be08-6022011e0e41" :result "OK"}
+  {:id "node:66bbc110-a28b-4b97-86b3-ca97517e28ec" :result "OK"}
+  {:id "node:981f100e-9ef6-4843-b898-ac95e5843794" :result "OK"}
+  {:id "node:1293bc7d-6725-4660-9e48-7792b1184968" :result "OK"}
 
-(add-edge "node:66bbc110-a28b-4b97-86b3-ca97517e28ec" "node:981f100e-9ef6-4843-b898-ac95e5843794")
-(add-edge "node:981f100e-9ef6-4843-b898-ac95e5843794" "node:1293bc7d-6725-4660-9e48-7792b1184968")
-(add-edge "node:1293bc7d-6725-4660-9e48-7792b1184968" "node:66bbc110-a28b-4b97-86b3-ca97517e28ec")
+  {:id "edge:c3051612-dd5f-47af-b408-f332aef57222" :result "OK"}
+  {:id "edge:6fbf5415-0d2d-4fba-a22e-b77e250e22ec" :result "OK"}
+  {:id "edge:8426fea9-5385-4235-be08-6022011e0e41" :result "OK"}
 
-["adjc:node:66bbc110-a28b-4b97-86b3-ca97517e28ec"
- "adjc:node:1293bc7d-6725-4660-9e48-7792b1184968"
- "adjc:node:981f100e-9ef6-4843-b898-ac95e5843794"]
+  (add-edge "node:66bbc110-a28b-4b97-86b3-ca97517e28ec" "node:981f100e-9ef6-4843-b898-ac95e5843794")
+  (add-edge "node:981f100e-9ef6-4843-b898-ac95e5843794" "node:1293bc7d-6725-4660-9e48-7792b1184968")
+  (add-edge "node:1293bc7d-6725-4660-9e48-7792b1184968" "node:66bbc110-a28b-4b97-86b3-ca97517e28ec")
 
-(def vs (find-vertex-ids))
-vs
-(def rs (find-relations vs))
-rs
-(def g (queries/graph vs rs))
-g
-(loom-io/view g)
+  ["adjc:node:66bbc110-a28b-4b97-86b3-ca97517e28ec"
+   "adjc:node:1293bc7d-6725-4660-9e48-7792b1184968"
+   "adjc:node:981f100e-9ef6-4843-b898-ac95e5843794"]
 
-(def as {"node:66bbc110-a28b-4b97-86b3-ca97517e28ec" {:label "node 1"}
-         "node:981f100e-9ef6-4843-b898-ac95e5843794" {:label "node 2"}
-         "node:1293bc7d-6725-4660-9e48-7792b1184968" {:label "node 3"}})
-(def g (queries/graph vs rs as))
-g
-(loom-io/view g)
+  (def vs (get-vertices))
+  vs
+  (def rs (get-vertices-relations vs))
+  rs
 
-)
+  ;;--  Combining loom and the Redis API  ---------------------------------;;
+
+  (def g (queries/graph vs rs))
+  g
+  (loom-io/view g)
+
+  (def as {"node:66bbc110-a28b-4b97-86b3-ca97517e28ec" {:label "node 1"}
+           "node:981f100e-9ef6-4843-b898-ac95e5843794" {:label "node 2"}
+           "node:1293bc7d-6725-4660-9e48-7792b1184968" {:label "node 3"}})
+  (def g (queries/graph vs rs as))
+  g
+  (loom-io/view g)
+  )
 
 (comment
   (startup)

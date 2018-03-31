@@ -42,6 +42,17 @@
   [this & args]
   (pipeline this [args]))
 
+(defn find-keys
+  [this pattern]
+  (if (= "*" pattern)
+    {:error {:type :bad-query
+             :msg "Provided pattern would result in expensive query."}}
+    (call this :keys pattern)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Support Commands   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn- create-edge-cmd
   ([id]
     (create-edge-cmd id {nil nil}))
@@ -126,20 +137,35 @@
   )
 
 (defn- -get-edge
-  [this]
+  [this id]
   )
 
 (defn- -get-edges
   [this]
-  )
+  (find-keys this (schema/edge "*")))
+
+(defn- -get-relations
+  [this]
+  (find-keys this (schema/relation "*")))
 
 (defn- -get-vertex
   [this id]
   )
 
+(defn- -get-vertex-relations
+  [this id]
+  (call this :lrange (schema/relation id) 0 -1))
+
 (defn- -get-vertices
   [this]
-  )
+  (find-keys this (schema/vertex "*")))
+
+(defn- -get-vertices-relations
+  [this ids]
+  (->> ids
+       (map (fn [x] [:lrange (schema/relation x) 0 -1]))
+       (pipeline this)
+       vec))
 
 (defn- -remove-edge
   [this]
@@ -158,10 +184,8 @@
   )
 
 (defn- -vertices
-  ([this]
-    (-vertices this 0))
-  ([this cursor]
-    (call this :hscan cursor)))
+  [this]
+  )
 
 (def behaviour
   {:add-edge -add-edge
@@ -174,8 +198,11 @@
    :flush -flush
    :get-edge -get-edge
    :get-edges -get-edges
+   :get-relations -get-relations
    :get-vertex -get-vertex
+   :get-vertex-relations -get-vertex-relations
    :get-vertices -get-vertices
+   :get-vertices-relations -get-vertices-relations
    :remove-edge -remove-edge
    :remove-vertex -remove-vertex
    :rollback -rollback
@@ -189,32 +216,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Non-API Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn find-keys
-  [this pattern]
-  (if (= "*" pattern)
-    {:error {:type :bad-query
-             :msg "Provided pattern would result in expensive query."}}
-    (call this :keys pattern)))
-
-(defn find-edge-ids
-  [this]
-  (find-keys this (schema/edge "*")))
-
-(defn find-relation-ids
-  [this]
-  (find-keys this (schema/relation "*")))
-
-(defn find-relations
-  [this vertex-ids]
-  (->> vertex-ids
-       (map (fn [x] [:lrange (schema/relation x) 0 -1]))
-       (pipeline this)
-       vec))
-
-(defn find-vertex-ids
-  [this]
-  (find-keys this (schema/vertex "*")))
 
 (defn latency-setup
   ([this]

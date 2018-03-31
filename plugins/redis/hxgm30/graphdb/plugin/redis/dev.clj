@@ -3,10 +3,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn-db find-keys pattern)
-(defn-db find-edge-ids)
-(defn-db find-relation-ids)
-(defn-db find-relations vertex-id)
-(defn-db find-vertex-ids)
 (defn-db latency-doctor)
 (defn-db latency-latest)
 
