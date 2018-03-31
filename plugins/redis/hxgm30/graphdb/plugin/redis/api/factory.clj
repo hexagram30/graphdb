@@ -2,20 +2,18 @@
   (:require
     [hxgm30.graphdb.plugin.redis.api.db :as redis])
   (:import
-    (clojure.lang Keyword)))
+    (clojure.lang Keyword))
+  (:refer-clojure :exclude [drop]))
 
 (load "/hxgm30/graphdb/plugin/protocols/factory")
 
-(defrecord RedisGraphFactory [
+(defrecord RedisFactory [
   spec
-  pool
-  graph-name])
+  pool])
 
 (defn- -connect
-  ([this]
-    (-connect this (:graph-name this)))
-  ([this graph-name]
-    (redis/map->RedisGraph (merge this {:graph-name graph-name}))))
+  [this]
+  (redis/map->RedisGraph this))
 
 (defn- -destroy
   [this]
@@ -26,7 +24,7 @@
   {:connect -connect
    :destroy -destroy})
 
-(extend RedisGraphFactory
+(extend RedisFactory
         DBFactoryAPI
         behaviour)
 
@@ -34,9 +32,6 @@
   ([spec]
     (create spec {}))
   ([spec pool]
-    (create spec pool :default))
-  ([spec pool ^Keyword graph-name]
-    (map->RedisGraphFactory
+    (map->RedisFactory
       {:spec spec
-       :pool pool
-       :graph-name graph-name})))
+       :pool pool})))

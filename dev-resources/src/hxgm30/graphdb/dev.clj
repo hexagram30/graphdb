@@ -20,7 +20,7 @@
 ;;;   Initial Setup & Utility Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(logger/set-level! '[hxgm30] :info)
+(logger/set-level! '[hxgm30] :debug)
 
 (def ^:dynamic *mgr* nil)
 
@@ -115,7 +115,20 @@
       `(backend/db-call (backend) (system) '~wrapper-name ~@rest)
       `(backend/db-call (backend) (system) '~wrapper-name)))))
 
-(defn-db add-vertex label)
+(defn add-edge
+  ([src dst]
+    (backend/db-call (backend) (system) 'add-edge src dst))
+  ([src dst attrs]
+    (backend/db-call (backend) (system) 'add-edge src dst attrs))
+  ([src dst attrs label attrs]
+    (backend/db-call (backend) (system) 'add-edge src dst attrs label attrs)))
+
+(defn add-vertex
+  ([]
+    (backend/db-call (backend) (system) 'add-vertex))
+  ([attrs]
+    (backend/db-call (backend) (system) 'add-vertex attrs)))
+
 (defn-db closed?)
 (defn-db commit)
 (defn-db configuration)
@@ -130,6 +143,58 @@
     (backend/db-call (backend) (system) 'vertices))
   ([ids]
     (backend/db-call (backend) (system) 'vertices ids)))
+
+(comment
+  (require
+    '[loom.alg :as alg]
+    '[loom.alg-generic :as alg-generic]
+    '[loom.attr :as attr]
+    '[loom.flow :as flow]
+    '[loom.graph :as graph]
+    '[loom.io :as loom-io])
+  (def g (graph/graph [1 2] [2 3] {3 [4] 5 [6 7]} 7 8 9))
+  (graph/nodes g)
+  (graph/edges g)
+  (loom-io/view g)
+  (graph/successors g 3)
+  (alg/bf-path g 1 4)
+
+  (def g2 (graph/add-nodes g "foobar" {:name "baz"} [1 2 3]))
+  (loom-io/view g2)
+  (def g3 (graph/add-edges g2 [10 11] ["foobar" {:name "baz"}]))
+  (loom-io/view g3)
+
+  (def attr-graph
+    (-> g
+        (attr/add-attr 1 :label "node 1")
+        (attr/add-attr 4 :label "node 4")
+        (attr/add-attr-to-nodes :parity "even" [2 4])
+        (attr/add-attr-to-edges :label "edge from node 5" [[5 6] [5 7]])))
+  (loom-io/view attr-graph)
+
+#loom.graph.BasicEditableGraph
+{:adj {1 #{2} 2 #{1 3} 3 #{2 4} 4 #{3} 5 #{6 7} 6 #{5} 7 #{5}}
+ :attrs {1 {:label "node 1"}
+         2 {:parity "even"}
+         4 {:label "node 4" :parity "even"}
+         5 {:loom.attr/edge-attrs {6 {:label "edge from node 5"}
+                                   7 {:label "edge from node 5"}}}
+         6 {:loom.attr/edge-attrs {5 {:label "edge from node 5"}}}
+         7 {:loom.attr/edge-attrs {5 {:label "edge from node 5"}}}}
+ :nodeset #{1 2 3 4 5 6 7 8 9}}
+
+{:id "node:66bbc110-a28b-4b97-86b3-ca97517e28ec" :result "OK"}
+{:id "node:981f100e-9ef6-4843-b898-ac95e5843794" :result "OK"}
+{:id "node:1293bc7d-6725-4660-9e48-7792b1184968" :result "OK"}
+
+{:id "edge:c3051612-dd5f-47af-b408-f332aef57222" :result "OK"}
+{:id "edge:6fbf5415-0d2d-4fba-a22e-b77e250e22ec" :result "OK"}
+{:id "edge:8426fea9-5385-4235-be08-6022011e0e41" :result "OK"}
+
+(add-edge "node:66bbc110-a28b-4b97-86b3-ca97517e28ec" "node:981f100e-9ef6-4843-b898-ac95e5843794")
+(add-edge "node:981f100e-9ef6-4843-b898-ac95e5843794" "node:1293bc7d-6725-4660-9e48-7792b1184968")
+(add-edge "node:1293bc7d-6725-4660-9e48-7792b1184968" "node:66bbc110-a28b-4b97-86b3-ca97517e28ec")
+)
 
 (comment
   (startup)

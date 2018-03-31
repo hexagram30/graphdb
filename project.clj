@@ -96,6 +96,8 @@
       :jvm-opts ["-Dgraph.backend=redis"]
       :source-paths ["plugins/redis"]
       :dependencies [
+        [aysylu/loom "1.0.1"]
+        [clojusc/trifl "0.2.0"]
         [com.taoensso/carmine "2.18.0"]]
       :aliases {
         "start-db" ["shell"
@@ -105,7 +107,7 @@
         "stop-db" ["shell"
           "docker-compose"
             "-f" "resources/docker/docker-compose-redis.yml"
-            "down"]}}}
+            "down"]}}
     :redisgraph-plugin {
       :jvm-opts ["-Dgraph.backend=redisgraph"]
       :source-paths ["plugins/redisgraph"]

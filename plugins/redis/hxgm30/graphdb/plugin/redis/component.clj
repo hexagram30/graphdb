@@ -4,7 +4,9 @@
     [hxgm30.graphdb.plugin.redis.api.db :as db]
     [hxgm30.graphdb.plugin.redis.api.factory :as factory]
     [com.stuartsierra.component :as component]
-    [taoensso.timbre :as log]))
+    [taoensso.timbre :as log])
+  (:import
+    (clojure.lang Symbol)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Component Dependencies   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -24,10 +26,6 @@
   [system]
   (get-in (config/get-cfg system) [:backend :redis :port]))
 
-(defn redis-graph-db
-  [system]
-  (get-in (config/get-cfg system) [:backend :redis :graph :db]))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Redis Component API   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -41,6 +39,22 @@
   [system]
   (get-in system [:backend :conn]))
 
+(defn get-factory
+  [system]
+  (get-in system [:backend :factory]))
+
+(defn db-call
+  [system ^Symbol func args]
+  (apply
+    (ns-resolve 'hxgm30.graphdb.plugin.redis.api.db func)
+    (concat [(get-conn system)] args)))
+
+(defn factory-call
+  [system ^Symbol func args]
+  (apply
+    (ns-resolve 'hxgm30.graphdb.plugin.redis.api.factory func)
+    (concat [(get-factory system)] args)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Component Lifecycle Implementation   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -51,7 +65,7 @@
   [this]
   (log/info "Starting Redis component ...")
   (let [f (factory/create (get-spec this))
-        conn (factory/connect f (redis-graph-db this))]
+        conn (factory/connect f)]
     (log/debug "Started Redis component.")
     (assoc this :conn conn)))
 

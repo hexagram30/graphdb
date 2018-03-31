@@ -6,7 +6,7 @@
      hxgm30
      org.janusgraph
      taoensso.carmine]
-   :level :info}
+   :level :debug}
  :backend {
    :plugin :redis
    :bitsy {

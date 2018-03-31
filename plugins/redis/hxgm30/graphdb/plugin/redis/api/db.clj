@@ -1,60 +1,94 @@
 (ns hxgm30.graphdb.plugin.redis.api.db
   "Items of interest for implementors:
 
-  * http://redisgraph.io/commands/
-  * https://s3.amazonaws.com/artifacts.opencypher.org/openCypher9.pdf
-  * https://github.com/ptaoussanis/carmine
-  * https://github.com/ptaoussanis/carmine/blob/master/src/taoensso/carmine.clj
-  * http://download.redis.io/redis-stable/redis.conf"
+  * https://github.com/aysylu/loom
+  * http://www.vldb.org/pvldb/1/1453965.pdf (Hexastore)
+  * https://redis.io/topics/indexes"
   (:require
     [clojure.string :as string]
     [hxgm30.graphdb.plugin.redis.api.queries :as queries]
-    [hxgm30.graphdb.plugin.redis.api.util :as util]
+    [hxgm30.graphdb.plugin.redis.api.schema :as schema]
     [taoensso.carmine :as redis]
-    [taoensso.timbre :as log])
+    [taoensso.timbre :as log]
+    [trifl.java :refer [uuid4]])
   (:refer-clojure :exclude [flush]))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Support Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn- call
+  [this & args]
+  (log/debug "Making call to Redis:" args)
+  (log/debugf "Native format: %s %s"
+              (string/upper-case (name (first args)))
+              (string/join " " (rest args)))
+  (redis/wcar
+    (select-keys this [:spec :pool])
+    (redis/redis-call args)))
+
+(defn- create-edge
+  ([this]
+    (create-edge this {nil nil}))
+  ([this attrs]
+    (create-edge this nil attrs))
+  ([this label attrs]
+    (let [id (schema/edge (uuid4))
+          normed-attrs (merge attrs (when label {:label label}))
+          flat-attrs (mapcat vec normed-attrs)
+          result (apply call (concat [this :hmset id] flat-attrs))]
+      {:id id
+       :result result})))
+
+(defn- create-relation
+  [this src-id dst-id edge-id]
+  (let [id (schema/relation src-id)
+        result (call this :rpush id dst-id)]
+    {:id id
+     :result result}))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   API Implementation   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (load "/hxgm30/graphdb/plugin/protocols/db")
 
 (defrecord RedisGraph [
   spec
-  pool
-  graph-name])
-
-(defn- -call
-  [this & args]
-  (log/debug "Making call to Redis:" args)
-  (log/debugf "Native format: %s %s \"%s\""
-              (string/upper-case (name (first args)))
-              (name (second args))
-              (nth args 2))
-  (redis/wcar
-    (select-keys this [:spec :pool])
-    (redis/redis-call args)))
-
-(defn- -cypher
-  [this query-str]
-  (-call this :graph.query (name (:graph-name this)) query-str))
+  pool])
 
 (defn- -add-edge
-  [this]
-  )
-
-(defn- -add-vertices
-  [this nodes-props]
-  (-cypher this))
+  ([this src-id dst-id]
+    (-add-edge this src-id dst-id {nil nil}))
+  ([this src-id dst-id attrs]
+    (-add-edge this src-id dst-id nil attrs))
+  ([this src-id dst-id label attrs]
+    (let [multi-result (call this :multi)
+          edge-result (create-edge this label attrs)
+          relation-result (create-relation this src-id dst-id (:id edge-result))
+          exec-result (call this :exec)]
+      {:multi multi-result
+       :edge edge-result
+       :relation relation-result
+       :exec exec-result})))
 
 (defn- -add-vertex
   ([this]
-    (-cypher this queries/create-simple-node))
-  ([this props]
-    (-add-vertex this (:label props) (dissoc props :label)))
-  ([this label props]
-    (-cypher)))
+    (-add-vertex this {nil nil}))
+  ([this attrs]
+    (let [id (schema/vertex (uuid4))
+          flat-attrs (mapcat vec attrs)
+          result (apply call (concat [this :hmset id] flat-attrs))]
+      {:id id
+       :result result})))
+
+(defn- -add-vertices
+  [this props]
+  )
 
 (defn- -backup
   [this]
-  (-call this :bgrewriteaof))
+  (call this :bgrewriteaof))
 
 (defn- -commit
   [this]
@@ -70,12 +104,11 @@
 
 (defn- -dump
   [this]
-  (-call this :bgsave))
+  (call this :bgsave))
 
 (defn- -explain
   [this query-str]
-  (print (-call this :graph.explain (name (:graph-name this)) query-str))
-  :ok)
+  )
 
 (defn- -flush
   [this]
@@ -95,7 +128,7 @@
 
 (defn- -get-vertices
   [this]
-  (-cypher this queries/match-all-nodes))
+  )
 
 (defn- -remove-edge
   [this]
@@ -113,12 +146,15 @@
   [this]
   )
 
+(defn- -vertices
+  [this]
+  )
+
 (def behaviour
   {:add-edge -add-edge
    :add-vertex -add-vertex
    :backup -backup
    :commit -commit
-   :cypher -cypher
    :configuration -configuration
    :disconnect -disconnect
    :explain -explain
@@ -130,7 +166,8 @@
    :remove-edge -remove-edge
    :remove-vertex -remove-vertex
    :rollback -rollback
-   :show-features -show-features})
+   :show-features -show-features
+   :vertices -vertices})
 
 (extend RedisGraph
         GraphDBAPI
