@@ -1,6 +1,6 @@
 (defprotocol GraphDBAPI
-  (add-edge [this src dst label])
-  (add-vertex [this] [this arg])
+  (add-edge [this src dst] [this src dst attrs] [this src dst label attrs])
+  (add-vertex [this] [this attrs])
   (backup [this] [this path])
   (closed? [this])
   (commit [this])
