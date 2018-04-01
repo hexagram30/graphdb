@@ -45,12 +45,20 @@
 
 (defn db-call
   [system ^Symbol func args]
-  (apply
-    (ns-resolve 'hxgm30.graphdb.plugin.redis.api.db func)
-    (concat [(get-conn system)] args)))
+  (log/trace "Component preparing to call into plugin db API ...")
+  (log/tracef "Got system, func, args: %s, %s, %s" system func args)
+  (let [resolved-func (ns-resolve 'hxgm30.graphdb.plugin.redis.api.db func)]
+    (log/trace "Got resolved function:" resolved-func)
+    (when (nil? resolved-func)
+      (log/error (str "Couldn't find function in given namespace; "
+                      "has it been added to the protocol/behaviour?")))
+    (apply
+      resolved-func
+      (concat [(get-conn system)] args))))
 
 (defn factory-call
   [system ^Symbol func args]
+  (log/trace "Component preparing to call into plugin factory API ...")
   (apply
     (ns-resolve 'hxgm30.graphdb.plugin.redis.api.factory func)
     (concat [(get-factory system)] args)))

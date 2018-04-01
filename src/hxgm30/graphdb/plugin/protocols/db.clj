@@ -23,6 +23,7 @@
   (graph-name [this])
   (open? [this])
   (remove-edge [this id])
+  (remove-edges [this])
   (remove-relation [this rid vid])
   (remove-relations [this vid])
   (remove-vertex [this id])

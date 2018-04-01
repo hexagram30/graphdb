@@ -217,8 +217,16 @@
        vec))
 
 (defn- -remove-edge
+  [this id]
+  (call this :del id))
+
+(defn- -remove-edges
   [this]
-  )
+  (->> this
+       -get-edges
+       (map (fn [x] [:del x]))
+       (pipeline this)
+       vec))
 
 (defn- -remove-relation
   [this relation-id vertex-id]
@@ -233,8 +241,8 @@
          vec)))
 
 (defn- -remove-vertex
-  [this]
-  )
+  [this id]
+  (call this :del id))
 
 (defn- -rollback
   [this]
@@ -280,6 +288,7 @@
    :get-vertices -get-vertices
    :get-vertices-relations -get-vertices-relations
    :remove-edge -remove-edge
+   :remove-edges -remove-edges
    :remove-relation -remove-relation
    :remove-relations -remove-relations
    :remove-vertex -remove-vertex
