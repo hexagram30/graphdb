@@ -166,9 +166,10 @@
 (defn-db find-relation-ids)
 (defn-db find-relations vertex-id)
 (defn-db find-vertex-ids)
-
 (defn-db graph-name)
 (defn-db open?)
+(defn-db remove-relation rid vid)
+(defn-db remove-relations vid)
 (defn-db variables)
 
 (defn vertices

@@ -8,6 +8,7 @@
     [clojure.string :as string]
     [hxgm30.graphdb.plugin.redis.api.queries :as queries]
     [hxgm30.graphdb.plugin.redis.api.schema :as schema]
+    [hxgm30.graphdb.plugin.redis.api.util :as plugin-util]
     [hxgm30.graphdb.util :as util]
     [taoensso.carmine :as redis]
     [taoensso.timbre :as log]
@@ -216,6 +217,18 @@
   [this]
   )
 
+(defn- -remove-relation
+  [this relation-id vertex-id]
+  (vec (call this :lrem relation-id 0 vertex-id)))
+
+(defn- -remove-relations
+  [this vertex-id]
+  (let [relation-id (create-index this :relation vertex-id)]
+    (->> vertex-id
+         (-get-vertex-relations this)
+         (map (partial remove-relation this relation-id))
+         vec)))
+
 (defn- -remove-vertex
   [this]
   )
@@ -255,6 +268,8 @@
    :get-vertices -get-vertices
    :get-vertices-relations -get-vertices-relations
    :remove-edge -remove-edge
+   :remove-relation -remove-relation
+   :remove-relations -remove-relations
    :remove-vertex -remove-vertex
    :rollback -rollback
    :show-features -show-features
