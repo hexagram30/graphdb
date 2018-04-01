@@ -180,8 +180,11 @@
   )
 
 (defn- -get-edge
-  [this id]
-  (call this :hscan id 0))
+  ([this id]
+    (-get-edge this id 0))
+  ([this id cursor]
+    {:id id
+     :attrs (get-attrs this id cursor)}))
 
 (defn- -get-edges
   [this]
@@ -241,6 +244,14 @@
   [this]
   )
 
+(defn- -edges
+  ([this]
+    (-edges this (get-edges this)))
+  ([this ids]
+    (->> ids
+         (map (partial get-edge this))
+         vec)))
+
 (defn- -vertices
   ([this]
     (-vertices this (get-vertices this)))
@@ -258,6 +269,7 @@
    :create-index -create-index
    :disconnect -disconnect
    :dump -dump
+   :edges -edges
    :explain -explain
    :flush -flush
    :get-edge -get-edge

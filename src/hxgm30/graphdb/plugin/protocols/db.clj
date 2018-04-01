@@ -9,7 +9,7 @@
   (cypher [this query-str])
   (disconnect [this])
   (dump [this])
-  (edges [this & args])
+  (edges [this] [this ids])
   (explain [this query-str])
   (features [this])
   (flush [this])
