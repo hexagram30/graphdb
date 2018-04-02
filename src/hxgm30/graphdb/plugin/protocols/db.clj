@@ -1,6 +1,6 @@
 (defprotocol GraphDBAPI
   (add-edge [this src dst] [this src dst attrs] [this src dst label attrs])
-  (add-vertex [this] [this attrs])
+  (add-vertex [this] [this attrs] [this label attrs])
   (backup [this] [this path])
   (closed? [this])
   (commit [this])
@@ -22,6 +22,7 @@
   (get-vertices-relations [this ids])
   (graph-name [this])
   (open? [this])
+  (relations [this] [this ids])
   (remove-edge [this id])
   (remove-edges [this])
   (remove-relation [this rid vid])

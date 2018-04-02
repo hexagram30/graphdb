@@ -2,6 +2,7 @@
   (:require
     [clojure.java.io :as io]
     [clojure.pprint :refer [pprint]]
+    [clojure.string :as string]
     [clojure.tools.namespace.repl :as repl]
     [clojusc.dev.system.core :as system-api]
     [clojusc.twig :as logger]
@@ -153,6 +154,13 @@
 (defn-db closed?)
 (defn-db commit)
 (defn-db configuration)
+
+(defn create-index
+  ([data-type]
+    (db-call create-index data-type))
+  ([data-type id]
+    (db-call create-index data-type id)))
+
 (defn-db dump)
 (defn-db edges)
 (defn-db features)
@@ -168,6 +176,7 @@
 (defn-db find-vertex-ids)
 (defn-db graph-name)
 (defn-db open?)
+(defn-db relations)
 (defn-db remove-edge id)
 (defn-db remove-edges)
 (defn-db remove-vertex id)

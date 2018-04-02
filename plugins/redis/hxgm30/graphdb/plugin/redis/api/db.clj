@@ -52,6 +52,8 @@
 
 (defn- call
   [this & args]
+  (log/trace "Using 'call' with args:" args)
+  (log/tracef "Wrapping args: [%s] ..." args)
   (pipeline this [args]))
 
 (defn- call-with-cursor
@@ -77,8 +79,10 @@
 (defn find-keys
   [this pattern]
   (if (= "*" pattern)
-    {:error {:type :bad-query
-             :msg "Provided pattern would result in expensive query."}}
+    (let [msg "Provided pattern would result in expensive query."]
+      (log/error msg)
+      {:error {:type :bad-query
+               :msg msg}})
     (call this :keys pattern)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -96,8 +100,8 @@
       (concat [:hmset id] flat-attrs))))
 
 (defn- create-relation-cmd
-  [src-id dst-id edge-id]
-  (let [id (create-index :relation src-id)]
+  [this src-id dst-id edge-id]
+  (let [id (create-index this :relation src-id)]
     [:rpush id dst-id]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -119,10 +123,10 @@
     (let [edge-id (create-index this :edge)
           result (pipeline
                    this
-                   [:multi]
-                   (create-edge-cmd edge-id label attrs)
-                   (create-relation-cmd src-id dst-id edge-id)
-                   [:exec])]
+                   [[:multi]
+                    (create-edge-cmd edge-id label attrs)
+                    (create-relation-cmd this src-id dst-id edge-id)
+                    [:exec]])]
       {:id edge-id
        :result result})))
 
@@ -130,8 +134,11 @@
   ([this]
     (-add-vertex this {nil nil}))
   ([this attrs]
+    (-add-vertex this {nil nil}))
+  ([this label attrs]
     (let [id (create-index this :vertex)
-          flat-attrs (mapcat vec attrs)
+          normed-attrs (merge attrs (when label {:label label}))
+          flat-attrs (mapcat vec normed-attrs)
           result (apply call (concat [this :hmset id] flat-attrs))]
       {:id id
        :result result})))
@@ -147,11 +154,11 @@
 
 (defn- -commit
   [this]
-  )
+  :not-implemented)
 
 (defn- -configuration
   [this]
-  )
+  :not-implemented)
 
 (defn- -create-index
   ([this data-type]
@@ -164,7 +171,7 @@
 
 (defn- -disconnect
   [this]
-  )
+  :not-implemented)
 
 (defn- -dump
   [this]
@@ -173,11 +180,11 @@
 
 (defn- -explain
   [this query-str]
-  )
+  :not-implemented)
 
 (defn- -flush
   [this]
-  )
+  :not-implemented)
 
 (defn- -get-edge
   ([this id]
@@ -246,15 +253,23 @@
 
 (defn- -rollback
   [this]
-  )
+  :not-implemented)
 
 (defn- -show-features
   [this]
-  )
+  :not-implemented)
 
 (defn- -edges
   ([this]
     (-edges this (get-edges this)))
+  ([this ids]
+    (->> ids
+         (map (partial get-edge this))
+         vec)))
+
+(defn- -relations
+  ([this]
+    (-relations this (get-edges this)))
   ([this ids]
     (->> ids
          (map (partial get-edge this))
@@ -287,6 +302,7 @@
    :get-vertex-relations -get-vertex-relations
    :get-vertices -get-vertices
    :get-vertices-relations -get-vertices-relations
+   :relations -relations
    :remove-edge -remove-edge
    :remove-edges -remove-edges
    :remove-relation -remove-relation
