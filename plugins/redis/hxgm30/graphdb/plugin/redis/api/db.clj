@@ -134,7 +134,7 @@
   ([this]
     (-add-vertex this {nil nil}))
   ([this attrs]
-    (-add-vertex this {nil nil}))
+    (-add-vertex this nil attrs))
   ([this label attrs]
     (let [id (create-index this :vertex)
           normed-attrs (merge attrs (when label {:label label}))
@@ -145,7 +145,7 @@
 
 (defn- -add-vertices
   [this props]
-  )
+  :forth-coming)
 
 (defn- -backup
   [this]
@@ -190,8 +190,7 @@
   ([this id]
     (-get-edge this id 0))
   ([this id cursor]
-    {:id id
-     :attrs (get-attrs this id cursor)}))
+    {id (get-attrs this id cursor)}))
 
 (defn- -get-edges
   [this]
@@ -205,8 +204,7 @@
   ([this id]
     (-get-vertex this id 0))
   ([this id cursor]
-    {:id id
-     :attrs (get-attrs this id cursor)}))
+    {id (get-attrs this id cursor)}))
 
 (defn- -get-vertex-relations
   [this id]
@@ -265,7 +263,7 @@
   ([this ids]
     (->> ids
          (map (partial get-edge this))
-         vec)))
+         (reduce merge))))
 
 (defn- -relations
   ([this]
@@ -281,7 +279,7 @@
   ([this ids]
     (->> ids
          (map (partial get-vertex this))
-         vec)))
+         (reduce merge))))
 
 (def behaviour
   {:add-edge -add-edge

@@ -192,72 +192,37 @@
 
 (comment
 
-  ;;--  Exploring the loom API  -------------------------------------------;;
-
-  (def g (graph/graph [1 2] [2 3] {3 [4] 5 [6 7]} 7 8 9))
-  (graph/nodes g)
-  (graph/edges g)
-  (loom-io/view g)
-  (graph/successors g 3)
-  (alg/bf-path g 1 4)
-
-  (def g2 (graph/add-nodes g "foobar" {:name "baz"} [1 2 3]))
-  (loom-io/view g2)
-  (def g3 (graph/add-edges g2 [10 11] ["foobar" {:name "baz"}]))
-  (loom-io/view g3)
-
-  (def attr-graph
-    (-> g
-        (attr/add-attr 1 :label "node 1")
-        (attr/add-attr 4 :label "node 4")
-        (attr/add-attr-to-nodes :parity "even" [2 4])
-        (attr/add-attr-to-edges :label "edge from node 5" [[5 6] [5 7]])))
-  (loom-io/view attr-graph)
-
-  ;#loom.graph.BasicEditableGraph
-  {:adj {1 #{2} 2 #{1 3} 3 #{2 4} 4 #{3} 5 #{6 7} 6 #{5} 7 #{5}}
-   :attrs {1 {:label "node 1"}
-           2 {:parity "even"}
-           4 {:label "node 4" :parity "even"}
-           5 {:loom.attr/edge-attrs {6 {:label "edge from node 5"}
-                                     7 {:label "edge from node 5"}}}
-           6 {:loom.attr/edge-attrs {5 {:label "edge from node 5"}}}
-           7 {:loom.attr/edge-attrs {5 {:label "edge from node 5"}}}}
-   :nodeset #{1 2 3 4 5 6 7 8 9}}
-
   ;;--  Exploring the new Redis backend API  ------------------------------;;
 
-  {:id "node:66bbc110-a28b-4b97-86b3-ca97517e28ec" :result "OK"}
-  {:id "node:981f100e-9ef6-4843-b898-ac95e5843794" :result "OK"}
-  {:id "node:1293bc7d-6725-4660-9e48-7792b1184968" :result "OK"}
-
-  {:id "edge:c3051612-dd5f-47af-b408-f332aef57222" :result "OK"}
-  {:id "edge:6fbf5415-0d2d-4fba-a22e-b77e250e22ec" :result "OK"}
-  {:id "edge:8426fea9-5385-4235-be08-6022011e0e41" :result "OK"}
-
-  (add-edge "node:66bbc110-a28b-4b97-86b3-ca97517e28ec" "node:981f100e-9ef6-4843-b898-ac95e5843794")
-  (add-edge "node:981f100e-9ef6-4843-b898-ac95e5843794" "node:1293bc7d-6725-4660-9e48-7792b1184968")
-  (add-edge "node:1293bc7d-6725-4660-9e48-7792b1184968" "node:66bbc110-a28b-4b97-86b3-ca97517e28ec")
-
-  ["adjc:node:66bbc110-a28b-4b97-86b3-ca97517e28ec"
-   "adjc:node:1293bc7d-6725-4660-9e48-7792b1184968"
-   "adjc:node:981f100e-9ef6-4843-b898-ac95e5843794"]
+  (add-vertex {:label :node1})
+  (add-vertex {:label :node2})
+  (add-vertex {:label :node3})
+  (add-vertex {:label :node4})
+  (add-vertex {:label :node5})
 
   (def vs (get-vertices))
   vs
+  [{:attrs {"label" "node2"} :id "node:ba00e4e6-a9b3-408a-9c4f-c356cf3e7534"}
+   {:attrs {"label" "node4"} :id "node:964fc62b-1942-44ef-bbb7-f1cdbfdb7e66"}
+   {:attrs {"label" "node3"} :id "node:6173a57e-7a5d-4aa3-ad3c-ec2497b2552b"}
+   {:attrs {"label" "node1"} :id "node:30a3d608-6f11-465e-8fe5-0d0de526ed68"}
+   {:attrs {"label" "node5"} :id "node:3f701956-eb4f-4c1a-a7c0-7bc5cb6b6361"}]
+
+
+  (add-edge "node:30a3d608-6f11-465e-8fe5-0d0de526ed68"
+            "node:ba00e4e6-a9b3-408a-9c4f-c356cf3e7534")
+  (add-edge "node:ba00e4e6-a9b3-408a-9c4f-c356cf3e7534"
+            "node:6173a57e-7a5d-4aa3-ad3c-ec2497b2552b")
+  (add-edge "node:ba00e4e6-a9b3-408a-9c4f-c356cf3e7534"
+            "node:964fc62b-1942-44ef-bbb7-f1cdbfdb7e66")
+  (add-edge "node:ba00e4e6-a9b3-408a-9c4f-c356cf3e7534"
+            "node:3f701956-eb4f-4c1a-a7c0-7bc5cb6b6361")
   (def rs (get-vertices-relations vs))
   rs
 
   ;;--  Combining loom and the Redis API  ---------------------------------;;
 
-  (def g (queries/graph vs rs))
-  g
-  (loom-io/view g)
-
-  (def as {"node:66bbc110-a28b-4b97-86b3-ca97517e28ec" {:label "node 1"}
-           "node:981f100e-9ef6-4843-b898-ac95e5843794" {:label "node 2"}
-           "node:1293bc7d-6725-4660-9e48-7792b1184968" {:label "node 3"}})
-  (def g (queries/graph vs rs as))
+  (def g (queries/graph vs rs (vertices)))
   g
   (loom-io/view g)
   )

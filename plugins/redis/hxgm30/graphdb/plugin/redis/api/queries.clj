@@ -14,9 +14,5 @@
   ([vertex-ids relations]
     (graph/graph (adjacency-map vertex-ids relations)))
   ([vertex-ids relations attrs]
-    (loop [g (graph vertex-ids relations)
-           as (map (fn [[k v]] (concat [k] ((comp flatten vec) v))) attrs)]
-      (if-not (seq as)
-        g
-        (recur (apply attr/add-attr (concat [g] (first as)))
-               (rest as))))))
+    (let [g (graph vertex-ids relations)]
+      (assoc g :attrs attrs))))
