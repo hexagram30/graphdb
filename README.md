@@ -46,6 +46,7 @@ files nested under the `plugins` directory.
 * http://janusgraph.org
 * https://orientdb.com/docs/last/index.html
 * http://redisgraph.io/commands/
+* https://redis.io/commands/
 
 
 ### Visualisation

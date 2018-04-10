@@ -225,7 +225,11 @@
   (def g (queries/graph vs rs (vertices)))
   g
   (loom-io/view g)
+
+  (add-vertex {:type :room :name "A cave" :description "You are in a dark cave."})
   )
+
+
 
 (comment
   (startup)

@@ -33,3 +33,12 @@
 (defn require-ns
   [an-ns]
   (find-ns an-ns))
+
+(defn list->map
+  "Given a flat list of pairs, convert them to a map."
+  [items]
+  (->> items
+       (partition 2)
+       (map (fn [[k v]] [(keyword k) v]))
+       vec
+       (into {})))

@@ -190,7 +190,7 @@
   ([this id]
     (-get-edge this id 0))
   ([this id cursor]
-    {id (get-attrs this id cursor)}))
+    {id (util/list->map (call this :hgetall id))}))
 
 (defn- -get-edges
   [this]
@@ -204,7 +204,7 @@
   ([this id]
     (-get-vertex this id 0))
   ([this id cursor]
-    {id (get-attrs this id cursor)}))
+    {id (util/list->map (call this :hgetall id))}))
 
 (defn- -get-vertex-relations
   [this id]
