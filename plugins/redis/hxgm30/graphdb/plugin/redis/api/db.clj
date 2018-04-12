@@ -15,7 +15,7 @@
     [trifl.java :refer [uuid4]])
   (:refer-clojure :exclude [flush]))
 
-(declare create-index)
+(declare get-index)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Support Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -101,7 +101,7 @@
 
 (defn- create-relation-cmd
   [this src-id dst-id edge-id]
-  (let [id (create-index this :relation src-id)]
+  (let [id (get-index this :relation src-id)]
     [:rpush id dst-id]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -120,7 +120,7 @@
   ([this src-id dst-id attrs]
     (-add-edge this src-id dst-id nil attrs))
   ([this src-id dst-id label attrs]
-    (let [edge-id (create-index this :edge)
+    (let [edge-id (get-index this :edge)
           result (pipeline
                    this
                    [[:multi]
@@ -136,7 +136,7 @@
   ([this attrs]
     (-add-vertex this nil attrs))
   ([this label attrs]
-    (let [id (create-index this :vertex)
+    (let [id (get-index this :vertex)
           normed-attrs (merge attrs (when label {:label label}))
           flat-attrs (mapcat vec normed-attrs)
           result (apply call (concat [this :hmset id] flat-attrs))]
@@ -160,9 +160,9 @@
   [this]
   :not-implemented)
 
-(defn- -create-index
+(defn- -get-index
   ([this data-type]
-    (-create-index this data-type (uuid4)))
+    (-get-index this data-type (uuid4)))
   ([this data-type id]
     (case data-type
       :edge (schema/edge id)
@@ -194,11 +194,11 @@
 
 (defn- -get-edges
   [this]
-  (find-keys this (create-index this :edge "*")))
+  (find-keys this (get-index this :edge "*")))
 
 (defn- -get-relations
   [this]
-  (find-keys this (create-index this :relation "*")))
+  (find-keys this (get-index this :relation "*")))
 
 (defn- -get-vertex
   ([this id]
@@ -208,16 +208,16 @@
 
 (defn- -get-vertex-relations
   [this id]
-  (call this :lrange (create-index this :relation id) 0 -1))
+  (call this :lrange (get-index this :relation id) 0 -1))
 
 (defn- -get-vertices
   [this]
-  (find-keys this (create-index this :vertex "*")))
+  (find-keys this (get-index this :vertex "*")))
 
 (defn- -get-vertices-relations
   [this ids]
   (->> ids
-       (map (fn [x] [:lrange (create-index this :relation x) 0 -1]))
+       (map (fn [x] [:lrange (get-index this :relation x) 0 -1]))
        (pipeline this)
        vec))
 
@@ -239,7 +239,7 @@
 
 (defn- -remove-relations
   [this vertex-id]
-  (let [relation-id (create-index this :relation vertex-id)]
+  (let [relation-id (get-index this :relation vertex-id)]
     (->> vertex-id
          (-get-vertex-relations this)
          (map (partial remove-relation this relation-id))
@@ -287,7 +287,6 @@
    :backup -backup
    :commit -commit
    :configuration -configuration
-   :create-index -create-index
    :disconnect -disconnect
    :dump -dump
    :edges -edges
@@ -295,6 +294,7 @@
    :flush -flush
    :get-edge -get-edge
    :get-edges -get-edges
+   :get-index -get-index
    :get-relations -get-relations
    :get-vertex -get-vertex
    :get-vertex-relations -get-vertex-relations
