@@ -85,6 +85,14 @@
                :msg msg}})
     (call this :keys pattern)))
 
+(defn- -delete-all
+  [this get-all-fn]
+  (->> this
+       get-all-fn
+       (map (fn [x] [:del x]))
+       (pipeline this)
+       vec))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Support Commands   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -227,23 +235,21 @@
 
 (defn- -remove-edges
   [this]
-  (->> this
-       -get-edges
-       (map (fn [x] [:del x]))
-       (pipeline this)
-       vec))
+  (-delete-all this -get-edges))
 
 (defn- -remove-relation
   [this relation-id vertex-id]
   (vec (call this :lrem relation-id 0 vertex-id)))
 
 (defn- -remove-relations
-  [this vertex-id]
-  (let [relation-id (get-index this :relation vertex-id)]
-    (->> vertex-id
-         (-get-vertex-relations this)
-         (map (partial remove-relation this relation-id))
-         vec)))
+  ([this]
+    (-delete-all this -get-relations))
+  ([this vertex-id]
+    (let [relation-id (get-index this :relation vertex-id)]
+      (->> vertex-id
+           (-get-vertex-relations this)
+           (map (partial remove-relation this relation-id))
+           vec))))
 
 (defn- -remove-vertex
   [this id]
@@ -251,11 +257,7 @@
 
 (defn- -remove-vertices
   [this]
-  (->> this
-       -get-vertices
-       (map (fn [x] [:del x]))
-       (pipeline this)
-       vec))
+  (-delete-all this -get-vertices))
 
 (defn- -rollback
   [this]
