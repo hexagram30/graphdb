@@ -28,6 +28,7 @@
   (remove-relation [this rid vid])
   (remove-relations [this vid])
   (remove-vertex [this id])
+  (remove-vertices [this])
   (rollback [this])
   (show-features [this])
   (tx [this])

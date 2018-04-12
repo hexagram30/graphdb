@@ -249,6 +249,14 @@
   [this id]
   (call this :del id))
 
+(defn- -remove-vertices
+  [this]
+  (->> this
+       -get-vertices
+       (map (fn [x] [:del x]))
+       (pipeline this)
+       vec))
+
 (defn- -rollback
   [this]
   :not-implemented)
@@ -306,6 +314,7 @@
    :remove-relation -remove-relation
    :remove-relations -remove-relations
    :remove-vertex -remove-vertex
+   :remove-vertices -remove-vertices
    :rollback -rollback
    :show-features -show-features
    :vertices -vertices})
