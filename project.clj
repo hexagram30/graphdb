@@ -94,7 +94,9 @@
             "down"]}}
     :redis-plugin {
       :jvm-opts ["-Dgraph.backend=redis"]
-      :source-paths ["plugins/redis"]
+      :source-paths [
+        "plugins/redis/src"
+        "plugins/redis/dev"]
       :dependencies [
         [aysylu/loom "1.0.1"]
         [clojusc/trifl "0.2.0"]

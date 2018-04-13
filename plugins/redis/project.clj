@@ -13,7 +13,6 @@
     [hexagram30/common "0.1.0-SNAPSHOT"]
     [org.clojure/clojure "1.8.0"]]
   :jvm-opts ["-Dgraph.backend=redis"]
-  :source-paths ["."]
+  :source-paths ["src"]
   :target-path "../../target/%s/"
   :clean-targets ^:replace [])
-
