@@ -77,6 +77,7 @@
     :orientdb-plugin {
       :jvm-opts ["-Dgraph.backend=orientdb"]
       :source-paths ["plugins/orientdb"]
+      :resource-paths ["plugins/orientdb/resources"]
       :dependencies [
         [clojurewerkz/ogre "3.3.1.0"]
         [com.orientechnologies/orientdb-client "2.2.33"]
@@ -86,17 +87,18 @@
       :aliases {
         "start-db" ["shell"
           "docker-compose"
-            "-f" "resources/docker/docker-compose-orientdb.yml"
+            "-f" "plugins/orientdb/resources/docker/docker-compose-orientdb.yml"
             "up"]
         "stop-db" ["shell"
           "docker-compose"
-            "-f" "resources/docker/docker-compose-orientdb.yml"
+            "-f" "plugins/orientdb/resources/docker/docker-compose-orientdb.yml"
             "down"]}}
     :redis-plugin {
       :jvm-opts ["-Dgraph.backend=redis"]
       :source-paths [
         "plugins/redis/src"
         "plugins/redis/dev"]
+      :resource-paths ["plugins/redis/resources"]
       :dependencies [
         [aysylu/loom "1.0.1"]
         [clojusc/trifl "0.2.0"]
@@ -104,25 +106,26 @@
       :aliases {
         "start-db" ["shell"
           "docker-compose"
-            "-f" "resources/docker/docker-compose-redis.yml"
+            "-f" "plugins/redis/resources/docker/docker-compose-redis.yml"
             "up"]
         "stop-db" ["shell"
           "docker-compose"
-            "-f" "resources/docker/docker-compose-redis.yml"
+            "-f" "plugins/redis/resources/docker/docker-compose-redis.yml"
             "down"]}}
     :redisgraph-plugin {
       :jvm-opts ["-Dgraph.backend=redisgraph"]
       :source-paths ["plugins/redisgraph"]
+      :resource-paths ["plugins/redisgraph/resources"]
       :dependencies [
         [com.taoensso/carmine "2.18.0"]]
       :aliases {
         "start-db" ["shell"
           "docker-compose"
-            "-f" "resources/docker/docker-compose-redis-graph.yml"
+            "-f" "plugins/redisgraph/resources/docker/docker-compose-redis-graph.yml"
             "up"]
         "stop-db" ["shell"
           "docker-compose"
-            "-f" "resources/docker/docker-compose-redis-graph.yml"
+            "-f" "plugins/redisgraph/resources/docker/docker-compose-redis-graph.yml"
             "down"]}}}
   :aliases {
     ;; Dev Aliases
