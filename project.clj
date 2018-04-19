@@ -32,6 +32,7 @@
       :exclusions [
         org.clojure/tools.namespace]
       :dependencies [
+        [clojusc/dev-system "0.1.0"]
         [clojusc/trifl "0.2.0"]
         [org.clojure/tools.namespace "0.2.11"]]
       :plugins [
