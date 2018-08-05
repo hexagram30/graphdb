@@ -8,15 +8,15 @@
 
 (defn latency-setup
   ([]
-    (backend/db-call (backend) (system) 'latency-setup))
+    (backend/db-call (system) 'latency-setup))
   ([milliseconds]
-    (backend/db-call (backend) (system) 'latency-setup milliseconds)))
+    (backend/db-call (system) 'latency-setup milliseconds)))
 
 (defn slowlog
   ([]
-    (backend/db-call (backend) (system) 'slowlog))
+    (backend/db-call (system) 'slowlog))
   ([count]
-    (backend/db-call (backend) (system) 'slowlog count)))
+    (backend/db-call (system) 'slowlog count)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Third-party Tools   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

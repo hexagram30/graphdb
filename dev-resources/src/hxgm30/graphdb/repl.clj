@@ -9,7 +9,7 @@
     [com.stuartsierra.component :as component]
     [hxgm30.graphdb.components.config :as config]
     [hxgm30.graphdb.components.core]
-    [hxgm30.graphdb.plugin.backend :as backend]
+    [hxgm30.graphdb.components.backend :as backend]
     [hxgm30.graphdb.plugin.util :as plugin-util]
     [hxgm30.graphdb.util :as util]
     [trifl.java :refer [show-methods]])
@@ -54,27 +54,37 @@
   (println (slurp (io/resource "text/banner.txt")))
   :ok)
 
+(defn- call-if-no-error
+  [func sys & args]
+  (if (:error sys)
+    sys
+    (apply func (cons sys args))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Data Support   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn backend
+(defn get-backend
   []
-  (config/backend-plugin (system)))
+  (call-if-no-error backend/backend (system)))
 
 (defn conn
   []
-  (backend/get-conn (backend) (system)))
+  (call-if-no-error backend/db-conn (system)))
 
 (defn factory
   []
-  (backend/get-factory (backend) (system)))
+  (call-if-no-error backend/factory (system)))
+
+(defn -load-backend-specific-dev
+  [system]
+  (condp = (backend/backend system)
+    :redis (load "/hxgm30/graphdb/plugin/redis/dev")
+    :skip-load))
 
 (defn load-backend-specific-dev
   []
-  (condp = (backend)
-    :redis (load "/hxgm30/graphdb/plugin/redis/dev")
-    :skip-load))
+  (call-if-no-error -load-backend-specific-dev (system)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Data Macros and Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -84,7 +94,7 @@
   [wrapper-name & rest]
   `(defn ~wrapper-name
     [~@rest]
-    (backend/factory-call (backend) (system) '~wrapper-name)))
+    (call-if-no-error backend/factory-call (system) '~wrapper-name)))
 
 (defn-factory dbs)
 
@@ -95,16 +105,16 @@
   `(defn ~wrapper-name
     [~@rest]
     ~(if args?
-      `(backend/db-call (backend) (system) '~wrapper-name ~@rest)
-      `(backend/db-call (backend) (system) '~wrapper-name)))))
+      `(call-if-no-error backend/db-call (system) '~wrapper-name ~rest)
+      `(call-if-no-error backend/db-call (system) '~wrapper-name)))))
 
 (defmacro db-call
   [func & rest]
   (let [args? (and (coll? rest)
                    (seq rest))]
   (if args?
-    `(backend/db-call (backend) (system) '~func ~@rest)
-    `(backend/db-call (backend) (system) '~func))))
+    `(call-if-no-error backend/db-call (system) '~func ~rest)
+    `(call-if-no-error backend/db-call (system) '~func))))
 
 (defn add-edge
   ([src dst]
