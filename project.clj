@@ -149,4 +149,13 @@
       ["kibit"]
       ;["eastwood"]
       ]
-    "ltest" ["with-profile" "+test" "ltest"]})
+    "ltest" ["with-profile" "+test" "ltest"]
+    "ltest-clean" ["do"
+      ["clean"]
+      ["ltest"]]
+    "build" ["do"
+      ["clean"]
+      ["check-vers"]
+      ["lint"]
+      ["ltest" ":all"]
+      ["uberjar"]]})
