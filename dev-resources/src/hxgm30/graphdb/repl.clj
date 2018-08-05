@@ -1,10 +1,10 @@
-(ns hxgm30.graphdb.dev
+(ns hxgm30.graphdb.repl
   (:require
     [clojure.java.io :as io]
     [clojure.pprint :refer [pprint]]
     [clojure.string :as string]
     [clojure.tools.namespace.repl :as repl]
-    [clojusc.dev.system.core :as system-api]
+    [clojusc.system-manager.core :refer :all]
     [clojusc.twig :as logger]
     [com.stuartsierra.component :as component]
     [hxgm30.graphdb.components.config :as config]
@@ -21,42 +21,42 @@
 ;;;   Initial Setup & Utility Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(logger/set-level! '[hxgm30] :debug)
+(def setup-options {
+  :init 'hxgm30.graphdb.components.core/init
+  :after-refresh 'hxgm30.graphdb.repl/init-and-startup
+  :throw-errors false})
 
-(def ^:dynamic *mgr* nil)
+(defn init
+  []
+  "This is used to set the options and any other global data.
+
+  This is defined in a function for re-use. For instance, when a REPL is
+  reloaded, the options will be lost and need to be re-applied."
+  (logger/set-level! '[hxgm30] :debug)
+  (setup-manager setup-options))
+
+(defn init-and-startup
+  []
+  "This is used as the 'after-refresh' function by the REPL tools library.
+  Not only do the options (and other global operations) need to be re-applied,
+  the system also needs to be started up, once these options have be set up."
+  (init)
+  (startup))
+
+;; It is not always desired that a system be started up upon REPL loading.
+;; Thus, we set the options and perform any global operations with init,
+;; and let the user determine when then want to bring up (a potentially
+;; computationally intensive) system.
+(init)
 
 (defn banner
   []
   (println (slurp (io/resource "text/banner.txt")))
   :ok)
 
-(defn mgr-arg
-  []
-  (if *mgr*
-    *mgr*
-    (throw (new Exception
-                (str "A state manager is not defined; "
-                     "have you run (startup)?")))))
-
-(defn system-arg
-  []
-  (if-let [state (:state *mgr*)]
-    (system-api/get-system state)
-    (throw (new Exception
-                (str "System data structure is not defined; "
-                     "have you run (startup)?")))))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Data Support   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn status
-  []
-  (system-api/get-status (:state (mgr-arg))))
-
-(defn system
-  []
-  (system-api/get-system (:state (mgr-arg))))
 
 (defn backend
   []
@@ -75,36 +75,6 @@
   (condp = (backend)
     :redis (load "/hxgm30/graphdb/plugin/redis/dev")
     :skip-load))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;   State Management   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn startup
-  []
-  (alter-var-root #'*mgr* (constantly (system-api/create-state-manager)))
-  (system-api/set-system-ns (:state *mgr*) "hxgm30.graphdb.components.core")
-  (system-api/startup *mgr*)
-  (load-backend-specific-dev)
-  (status))
-
-(defn shutdown
-  []
-  (when *mgr*
-    (let [result (system-api/shutdown (mgr-arg))]
-      (alter-var-root #'*mgr* (constantly nil))
-      result)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;   Reloading Management   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn reset
-  []
-  (shutdown)
-  (repl/refresh :after 'hxgm30.graphdb.dev/startup))
-
-(def refresh #'repl/refresh)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Data Macros and Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -202,11 +172,11 @@
 
   (def vs (get-vertices))
   vs
-  [{:attrs {"label" "node2"} :id "node:ba00e4e6-a9b3-408a-9c4f-c356cf3e7534"}
-   {:attrs {"label" "node4"} :id "node:964fc62b-1942-44ef-bbb7-f1cdbfdb7e66"}
-   {:attrs {"label" "node3"} :id "node:6173a57e-7a5d-4aa3-ad3c-ec2497b2552b"}
-   {:attrs {"label" "node1"} :id "node:30a3d608-6f11-465e-8fe5-0d0de526ed68"}
-   {:attrs {"label" "node5"} :id "node:3f701956-eb4f-4c1a-a7c0-7bc5cb6b6361"}]
+  ["node:ba00e4e6-a9b3-408a-9c4f-c356cf3e7534"
+   "node:964fc62b-1942-44ef-bbb7-f1cdbfdb7e66"
+   "node:6173a57e-7a5d-4aa3-ad3c-ec2497b2552b"
+   "node:30a3d608-6f11-465e-8fe5-0d0de526ed68"
+   "node:3f701956-eb4f-4c1a-a7c0-7bc5cb6b6361"]
 
 
   (add-edge "node:30a3d608-6f11-465e-8fe5-0d0de526ed68"

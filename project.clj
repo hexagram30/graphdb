@@ -21,7 +21,7 @@
     :name "Apache License, Version 2.0"
     :url "http://www.apache.org/licenses/LICENSE-2.0"}
   :dependencies [
-    [clojusc/dev-system "0.1.0"]
+    [clojusc/system-manager "0.3.0-SNAPSHOT"]
     [clojusc/twig "0.3.2"]
     [hexagram30/common "0.1.0-SNAPSHOT"]
     [org.clojure/clojure "1.8.0"]]
@@ -39,7 +39,7 @@
         [venantius/ultra "0.5.2"]]
       :source-paths ["dev-resources/src"]
       :repl-options {
-        :init-ns hxgm30.graphdb.dev
+        :init-ns hxgm30.graphdb.repl
         :prompt ~get-prompt
         :init ~(println (get-banner))}}
     :lint {
