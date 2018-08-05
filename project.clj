@@ -22,9 +22,9 @@
     :url "http://www.apache.org/licenses/LICENSE-2.0"}
   :dependencies [
     [clojusc/system-manager "0.3.0-SNAPSHOT"]
-    [clojusc/twig "0.3.2"]
+    [clojusc/twig "0.3.3"]
     [hexagram30/common "0.1.0-SNAPSHOT"]
-    [org.clojure/clojure "1.8.0"]]
+    [org.clojure/clojure "1.9.0"]]
   :profiles {
     :ubercompile {
       :aot :all}
@@ -32,8 +32,7 @@
       :exclusions [
         org.clojure/tools.namespace]
       :dependencies [
-        [clojusc/dev-system "0.1.0"]
-        [clojusc/trifl "0.2.0"]
+        [clojusc/trifl "0.3.0"]
         [org.clojure/tools.namespace "0.2.11"]]
       :plugins [
         [lein-shell "0.5.0"]
@@ -51,7 +50,7 @@
       :source-paths ^:replace ["src"]
       :test-paths ^:replace []
       :plugins [
-        [jonase/eastwood "0.2.5"]
+        [jonase/eastwood "0.2.9"]
         [lein-ancient "0.6.15"]
         [lein-bikeshed "0.5.1"]
         [lein-kibit "0.1.6"]
@@ -65,7 +64,7 @@
     :bitsy-plugin {
       :source-paths ["plugins/bitsy"]
       :dependencies [
-        [com.lambdazen.bitsy/bitsy "3.0.2"]]}
+        [com.lambdazen.bitsy/bitsy "3.0.3"]]}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;;;   Plugins   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -73,17 +72,17 @@
       :jvm-opts ["-Dgraph.backend=janusgraph"]
       :source-paths ["plugins/janusgraph"]
       :dependencies [
-        [org.apache.tinkerpop/gremlin-server "3.2.7"]
-        [org.janusgraph/janusgraph-berkeleyje "0.2.0"]]}
+        [org.apache.tinkerpop/gremlin-server "3.3.3"]
+        [org.janusgraph/janusgraph-berkeleyje "0.2.1"]]}
     :orientdb-plugin {
       :jvm-opts ["-Dgraph.backend=orientdb"]
       :source-paths ["plugins/orientdb"]
       :resource-paths ["plugins/orientdb/resources"]
       :dependencies [
-        [clojurewerkz/ogre "3.3.1.0"]
-        [com.orientechnologies/orientdb-client "2.2.33"]
-        [com.orientechnologies/orientdb-core "2.2.33"]
-        [com.orientechnologies/orientdb-graphdb "2.2.33"]
+        [clojurewerkz/ogre "3.3.2.0"]
+        [com.orientechnologies/orientdb-client "3.0.5"]
+        [com.orientechnologies/orientdb-core "3.0.5"]
+        [com.orientechnologies/orientdb-graphdb "3.0.5"]
         [com.tinkerpop.blueprints/blueprints-core "2.6.0"]]
       :aliases {
         "start-db" ["shell"
@@ -102,8 +101,8 @@
       :resource-paths ["plugins/redis/resources"]
       :dependencies [
         [aysylu/loom "1.0.1"]
-        [clojusc/trifl "0.2.0"]
-        [com.taoensso/carmine "2.18.0"]]
+        [clojusc/trifl "0.3.0"]
+        [com.taoensso/carmine "2.18.1"]]
       :aliases {
         "start-db" ["shell"
           "docker-compose"
@@ -118,7 +117,7 @@
       :source-paths ["plugins/redisgraph"]
       :resource-paths ["plugins/redisgraph/resources"]
       :dependencies [
-        [com.taoensso/carmine "2.18.0"]]
+        [com.taoensso/carmine "2.18.1"]]
       :aliases {
         "start-db" ["shell"
           "docker-compose"
