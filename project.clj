@@ -73,7 +73,7 @@
       :source-paths ["plugins/janusgraph"]
       :dependencies [
         [org.apache.tinkerpop/gremlin-server "3.3.3"]
-        [org.janusgraph/janusgraph-berkeleyje "0.2.1"]]}
+        [org.janusgraph/janusgraph-berkeleyje "0.3.0"]]}
     :orientdb-plugin {
       :jvm-opts ["-Dgraph.backend=orientdb"]
       :source-paths ["plugins/orientdb"]
@@ -100,7 +100,7 @@
         "plugins/redis/dev"]
       :resource-paths ["plugins/redis/resources"]
       :dependencies [
-        [aysylu/loom "1.0.1"]
+        [aysylu/loom "1.0.2"]
         [clojusc/trifl "0.3.0"]
         [com.taoensso/carmine "2.18.1"]]
       :aliases {
