@@ -15,7 +15,7 @@
        "\u001B[35m]\u001B[33m λ\u001B[m=> "))
 
 (defproject hexagram30/graphdb "0.1.0-SNAPSHOT"
-  :description "A graph database, built on OrientDB, for use by hexagram30 projects"
+  :description "A graph database for use by hexagram30 projects"
   :url "https://github.com/hexagram30/graphdb"
   :license {
     :name "Apache License, Version 2.0"
