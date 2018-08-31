@@ -7,11 +7,11 @@
     [clojusc.system-manager.core :refer :all]
     [clojusc.twig :as logger]
     [com.stuartsierra.component :as component]
+    [hxgm30.common.util :as util]
     [hxgm30.graphdb.components.config :as config]
     [hxgm30.graphdb.components.core]
     [hxgm30.graphdb.components.backend :as backend]
     [hxgm30.graphdb.plugin.util :as plugin-util]
-    [hxgm30.graphdb.util :as util]
     [trifl.java :refer [show-methods]])
   (:import
     (java.net URI)
