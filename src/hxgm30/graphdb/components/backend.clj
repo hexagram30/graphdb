@@ -11,8 +11,8 @@
   This namespace supports the generic operations of the backends, letting the
   plugins handle actual component lifecycle operations."
   (:require
+    [hxgm30.db.plugin.util :as util]
     [hxgm30.graphdb.components.config :as config]
-    [hxgm30.graphdb.plugin.util :as util]
     [taoensso.timbre :as log])
   (:import
     (clojure.lang Keyword)))

@@ -24,6 +24,7 @@
     [clojusc/system-manager "0.3.0-SNAPSHOT"]
     [clojusc/twig "0.3.3"]
     [hexagram30/common "0.1.0-SNAPSHOT"]
+    [hexagram30/db-plugin "0.1.0-SNAPSHOT"]
     [org.clojure/clojure "1.9.0"]]
   :profiles {
     :ubercompile {
