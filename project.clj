@@ -66,27 +66,16 @@
     ;;;   Plugins   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :bitsy-plugin {
-      :source-paths ["plugins/bitsy"]
+      :jvm-opts ["-Ddb.backend=bitsy"]
       :dependencies [
-        [com.lambdazen.bitsy/bitsy "3.0.3"]
         [hexagram30/bitsy-db-plugin "0.1.0-SNAPSHOT"]]}
     :janusgraph-plugin {
       :jvm-opts ["-Ddb.backend=janusgraph"]
-      :source-paths ["plugins/janusgraph"]
       :dependencies [
-        [hexagram30/janusgraph-db-plugin "0.1.0-SNAPSHOT"]
-        [org.apache.tinkerpop/gremlin-server "3.3.3"]
-        [org.janusgraph/janusgraph-berkeleyje "0.3.0"]]}
+        [hexagram30/janusgraph-db-plugin "0.1.0-SNAPSHOT"]]}
     :orientdb-plugin {
       :jvm-opts ["-Ddb.backend=orientdb"]
-      :source-paths ["plugins/orientdb"]
-      :resource-paths ["plugins/orientdb/resources"]
       :dependencies [
-        [clojurewerkz/ogre "3.3.2.0"]
-        [com.orientechnologies/orientdb-client "3.0.5"]
-        [com.orientechnologies/orientdb-core "3.0.5"]
-        [com.orientechnologies/orientdb-graphdb "3.0.5"]
-        [com.tinkerpop.blueprints/blueprints-core "2.6.0"]
         [hexagram30/orient-db-plugin "0.1.0-SNAPSHOT"]]
       :aliases {
         "start-db" ["shell"
@@ -99,14 +88,7 @@
             "down"]}}
     :redis-plugin {
       :jvm-opts ["-Ddb.backend=redis"]
-      :source-paths [
-        "plugins/redis/src"
-        "plugins/redis/dev"]
-      :resource-paths ["plugins/redis/resources"]
       :dependencies [
-        [aysylu/loom "1.0.2"]
-        [clojusc/trifl "0.3.0"]
-        [com.taoensso/carmine "2.18.1"]
         [hexagram30/redis-db-plugin "0.1.0-SNAPSHOT"]]
       :aliases {
         "start-db" ["shell"
@@ -119,10 +101,7 @@
             "down"]}}
     :redisgraph-plugin {
       :jvm-opts ["-Ddb.backend=redisgraph"]
-      :source-paths ["plugins/redisgraph"]
-      :resource-paths ["plugins/redisgraph/resources"]
       :dependencies [
-        [com.taoensso/carmine "2.18.1"]
         [hexagram30/redisgraph-db-plugin "0.1.0-SNAPSHOT"]]
       :aliases {
         "start-db" ["shell"
