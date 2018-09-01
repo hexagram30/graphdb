@@ -62,21 +62,23 @@
     :server {
       :jvm-opts ["-XX:MaxDirectMemorySize=512g"]
       :main hxgm30.graphdb.server}
-    :bitsy-plugin {
-      :source-paths ["plugins/bitsy"]
-      :dependencies [
-        [com.lambdazen.bitsy/bitsy "3.0.3"]]}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;;;   Plugins   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :bitsy-plugin {
+      :source-paths ["plugins/bitsy"]
+      :dependencies [
+        [com.lambdazen.bitsy/bitsy "3.0.3"]
+        [hexagram30/bitsy-db-plugin "0.1.0-SNAPSHOT"]]}
     :janusgraph-plugin {
-      :jvm-opts ["-Dgraph.backend=janusgraph"]
+      :jvm-opts ["-Ddb.backend=janusgraph"]
       :source-paths ["plugins/janusgraph"]
       :dependencies [
+        [hexagram30/janusgraph-db-plugin "0.1.0-SNAPSHOT"]
         [org.apache.tinkerpop/gremlin-server "3.3.3"]
         [org.janusgraph/janusgraph-berkeleyje "0.3.0"]]}
     :orientdb-plugin {
-      :jvm-opts ["-Dgraph.backend=orientdb"]
+      :jvm-opts ["-Ddb.backend=orientdb"]
       :source-paths ["plugins/orientdb"]
       :resource-paths ["plugins/orientdb/resources"]
       :dependencies [
@@ -84,7 +86,8 @@
         [com.orientechnologies/orientdb-client "3.0.5"]
         [com.orientechnologies/orientdb-core "3.0.5"]
         [com.orientechnologies/orientdb-graphdb "3.0.5"]
-        [com.tinkerpop.blueprints/blueprints-core "2.6.0"]]
+        [com.tinkerpop.blueprints/blueprints-core "2.6.0"]
+        [hexagram30/orient-db-plugin "0.1.0-SNAPSHOT"]]
       :aliases {
         "start-db" ["shell"
           "docker-compose"
@@ -95,7 +98,7 @@
             "-f" "plugins/orientdb/resources/docker/docker-compose-orientdb.yml"
             "down"]}}
     :redis-plugin {
-      :jvm-opts ["-Dgraph.backend=redis"]
+      :jvm-opts ["-Ddb.backend=redis"]
       :source-paths [
         "plugins/redis/src"
         "plugins/redis/dev"]
@@ -103,7 +106,8 @@
       :dependencies [
         [aysylu/loom "1.0.2"]
         [clojusc/trifl "0.3.0"]
-        [com.taoensso/carmine "2.18.1"]]
+        [com.taoensso/carmine "2.18.1"]
+        [hexagram30/redis-db-plugin "0.1.0-SNAPSHOT"]]
       :aliases {
         "start-db" ["shell"
           "docker-compose"
@@ -114,11 +118,12 @@
             "-f" "plugins/redis/resources/docker/docker-compose-redis.yml"
             "down"]}}
     :redisgraph-plugin {
-      :jvm-opts ["-Dgraph.backend=redisgraph"]
+      :jvm-opts ["-Ddb.backend=redisgraph"]
       :source-paths ["plugins/redisgraph"]
       :resource-paths ["plugins/redisgraph/resources"]
       :dependencies [
-        [com.taoensso/carmine "2.18.1"]]
+        [com.taoensso/carmine "2.18.1"]
+        [hexagram30/redisgraph-db-plugin "0.1.0-SNAPSHOT"]]
       :aliases {
         "start-db" ["shell"
           "docker-compose"
