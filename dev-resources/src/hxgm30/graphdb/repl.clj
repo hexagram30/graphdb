@@ -12,6 +12,7 @@
     [hxgm30.graphdb.components.config :as config]
     [hxgm30.graphdb.components.core]
     [hxgm30.db.plugin.util :as plugin-util]
+    [taoensso.timbre :as log]
     [trifl.java :refer [show-methods]])
   (:import
     (java.net URI)
@@ -169,6 +170,8 @@
     (db-call vertices))
   ([ids]
     (db-call vertices ids)))
+
+(load-backend-specific-dev)
 
 (comment
 
