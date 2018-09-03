@@ -31,9 +31,9 @@
           cfg (common/read-edn-resource filename)
           subtype (get-backend-subtype cfg plugin-cfg)]
       (util/deep-merge
-        (-> plugin-cfg
-            (assoc :backend (select-keys plugin-backend-cfg
-                                         [:plugin subtype])))
+        (assoc plugin-cfg
+               :backend (select-keys plugin-backend-cfg
+                                     [:plugin subtype]))
         (-> cfg
             ;; If something was defined using -D on the CLI, pull it in
             (assoc-in [:backend :plugin] (get-backend-type cfg plugin-cfg))
