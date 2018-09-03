@@ -11,18 +11,17 @@
   (or (keyword (System/getProperty "graph.backend"))
       (get-in cfg-data [:backend :plugin])))
 
-(defn clean-config
-  "Only include backend config data for the enabled backend."
-  [cfg backend]
-  (-> cfg
-      (assoc :backend (select-keys
-                       (:backend cfg)
-                       [:plugin backend]))
-      (assoc-in [:backend :plugin] backend)))
+(defn get-backend-subtype
+  [cfg-data]
+  (or (keyword (System/getProperty "graph.backend.subtype"))
+      (get-in cfg-data [:backend :subtype])))
 
 (defn data
   ([]
     (data config-file))
   ([filename]
     (let [cfg (common/read-edn-resource filename)]
-      (clean-config cfg (get-backend-type cfg)))))
+      (-> cfg
+          ;; If something was defined using -D on the CLI, pull it in
+          (assoc-in [:backend :plugin] (get-backend-type cfg))
+          (assoc-in [:backend :subtype] (get-backend-subtype cfg))))))

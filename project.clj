@@ -91,27 +91,17 @@
       :dependencies [
         [hexagram30/redis-db-plugin "0.1.0-SNAPSHOT"]]
       :aliases {
-        "start-db" ["shell"
-          "docker-compose"
-            "-f" "plugins/redis/resources/docker/docker-compose-redis.yml"
-            "up"]
-        "stop-db" ["shell"
-          "docker-compose"
-            "-f" "plugins/redis/resources/docker/docker-compose-redis.yml"
-            "down"]}}
+        "read-db-cfg" ["run" "-m" "hxgm30.db.plugin.docker" "read" "compose-redis-db.yml"]
+        "start-db" ["run" "-m" "hxgm30.db.plugin.docker" "up" "compose-redis-db.yml"]
+        "stop-db" ["run" "-m" "hxgm30.db.plugin.docker" "down" "compose-redis-db.yml"]}}
     :redisgraph-plugin {
       :jvm-opts ["-Ddb.backend=redisgraph"]
       :dependencies [
         [hexagram30/redisgraph-db-plugin "0.1.0-SNAPSHOT"]]
       :aliases {
-        "start-db" ["shell"
-          "docker-compose"
-            "-f" "plugins/redisgraph/resources/docker/docker-compose-redis-graph.yml"
-            "up"]
-        "stop-db" ["shell"
-          "docker-compose"
-            "-f" "plugins/redisgraph/resources/docker/docker-compose-redis-graph.yml"
-            "down"]}}}
+        "read-db-cfg" ["run" "-m" "hxgm30.db.plugin.docker" "read" "compose-redis-graphdb.yml"]
+        "start-db" ["run" "-m" "hxgm30.db.plugin.docker" "up" "compose-redis-graphdb.yml"]
+        "stop-db" ["run" "-m" "hxgm30.db.plugin.docker" "down" "compose-redis-graphdb.yml"]}}}
   :aliases {
     ;; Dev Aliases
     "repl" ["do"

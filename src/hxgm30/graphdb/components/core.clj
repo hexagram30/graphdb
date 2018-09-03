@@ -1,10 +1,10 @@
 (ns hxgm30.graphdb.components.core
   (:require
     [com.stuartsierra.component :as component]
+    [hxgm30.db.plugin.backend :as backend]
     [hxgm30.graphdb.components.config :as config]
     [hxgm30.graphdb.components.logging :as logging]
-    [hxgm30.graphdb.config :as cfg-lib]
-    [hxgm30.graphdb.plugin.backend :as backend]))
+    [hxgm30.graphdb.config :as cfg-lib]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Common Configuration Components   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

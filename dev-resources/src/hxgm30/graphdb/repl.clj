@@ -8,10 +8,10 @@
     [clojusc.twig :as logger]
     [com.stuartsierra.component :as component]
     [hxgm30.common.util :as util]
+    [hxgm30.db.plugin.component :as backend]
     [hxgm30.graphdb.components.config :as config]
     [hxgm30.graphdb.components.core]
-    [hxgm30.graphdb.components.backend :as backend]
-    [hxgm30.graphdb.plugin.util :as plugin-util]
+    [hxgm30.db.plugin.util :as plugin-util]
     [trifl.java :refer [show-methods]])
   (:import
     (java.net URI)
@@ -66,7 +66,7 @@
 
 (defn get-backend
   []
-  (call-if-no-error backend/backend (system)))
+  (call-if-no-error backend/backend-plugin (system)))
 
 (defn conn
   []
@@ -78,7 +78,7 @@
 
 (defn -load-backend-specific-dev
   [system]
-  (condp = (backend/backend system)
+  (condp = (backend/backend-plugin system)
     :redis (load "/hxgm30/graphdb/plugin/redis/dev")
     :skip-load))
 

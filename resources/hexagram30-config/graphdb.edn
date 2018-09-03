@@ -1,11 +1,12 @@
 {:user {:password-file "~/.hexagram30/graphdb.edn"}
  :logging {
    :nss [
-     com.lambdazen.bitsy
-     com.orientechnologies
-     hxgm30
-     org.janusgraph
-     taoensso.carmine]
-   :level :debug}
+     hxgm30]
+   :level :trace}
  :backend {
-   :plugin :redis}}
+   :plugin :redis
+   :subtype :graphdb
+   :graphdb {
+     :redis {
+       :host "localhost"
+       :port 6379}}}}
