@@ -1,6 +1,7 @@
 (ns hxgm30.graphdb.repl
   (:require
     [clojure.java.io :as io]
+    [clojure.java.shell :as shell]
     [clojure.pprint :refer [pprint]]
     [clojure.string :as string]
     [clojure.tools.namespace.repl :as repl]
